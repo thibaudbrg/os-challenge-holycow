@@ -1,3 +1,6 @@
 # ninja log v5
 2	125	6843670817222839	CMakeFiles/oschalge.dir/main.c.obj	159d3456d2b09684
 180	481	6843670820716059	oschalge.exe	b52dd5f8b0702b77
+7	1543	6847943803684055	CMakeFiles/oschalge.dir/tcpserver.c.obj	ef8348ce56627708
+0	1904	6847942516628309	CMakeFiles/oschalge.dir/tcpclient.c.obj	97cbfa10c5cfbb87
+0	1365	6847971542847673	CMakeFiles/oschalge.dir/server_youtube.c.obj	43941b348007d9e8

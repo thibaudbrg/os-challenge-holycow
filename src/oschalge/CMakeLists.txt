@@ -3,4 +3,4 @@ project(oschalge C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(oschalge main.c)
+add_executable(oschalge server_youtube.c)
