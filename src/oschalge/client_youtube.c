@@ -1,12 +1,30 @@
 #include <stdio.h>
-#include<stdlib.h>
+#include <stdlib.h>
 
-#include <sys/types.h>
-//#include <sys/socket.h>
-
-//#include <netinet.in.h>
-#include <winsock.h>
+#if defined(_WIN32) || defined(_WIN64) || defined(WIN32)
+/* Windows headers */
+#include <windows.h>
 #include <io.h>
+#include <winsock2.h>
+
+#else /* or check here for unix / linux & fail if OS unrecognized */
+/* POSIX headers */
+#include <netdb.h>
+#include <poll.h>
+#include <sys/resource.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet.in.h>
+#include <sys/time.h>
+#include <sys/un.h>
+#include <unistd.h>
+
+#endif /* _WIN32 */
+
+/* shared headers */
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 //===================================TCP Client===================================//
 
