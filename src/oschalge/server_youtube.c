@@ -3,9 +3,10 @@
 
 #if defined(_WIN32) || defined(_WIN64) || defined(WIN32)
 /* Windows headers */
+#include <winsock2.h>
 #include <windows.h>
 #include <io.h>
-#include <winsock2.h>
+
 
 #else /* or check here for unix / linux & fail if OS unrecognized */
 /* POSIX headers */
@@ -14,7 +15,7 @@
 #include <sys/resource.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet.in.h>
+#include <netinet/in.h>
 #include <sys/time.h>
 #include <sys/un.h>
 #include <unistd.h>

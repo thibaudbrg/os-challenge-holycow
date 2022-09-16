@@ -3,9 +3,10 @@
 
 #if defined(_WIN32) || defined(_WIN64) || defined(WIN32)
 /* Windows headers */
+#include <winsock2.h>
 #include <windows.h>
 #include <io.h>
-#include <winsock2.h>
+
 
 #else /* or check here for unix / linux & fail if OS unrecognized */
 /* POSIX headers */
@@ -14,7 +15,7 @@
 #include <sys/resource.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet.in.h>
+#include <netinet/in.h>
 #include <sys/time.h>
 #include <sys/un.h>
 #include <unistd.h>
@@ -43,7 +44,7 @@ int main(void) {
 
     int connection_status = connect(network_socket, (struct socketaddr *) &server_address, sizeof(server_address));
     if (connection_status != 0) {
-        fprintf(stderr, "There was an error making a conncetion to the remote socket. \n\n");
+        fprintf(stderr, "There was an error making a connection to the remote socket. \n\n");
         return -1;
     }
 
