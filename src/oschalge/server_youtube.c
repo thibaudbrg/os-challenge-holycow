@@ -30,7 +30,7 @@
 
 //===================================TCP Server===================================//
 
-int main(void) {
+int main(int argc, char**argv) {
 
     char server_message[256] = "You have reached the server!\n\n";
 
@@ -41,7 +41,7 @@ int main(void) {
     // Define the address structure
     struct sockaddr_in server_address;
     server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(9002);
+    server_address.sin_port = htons(*argv[1]);
     server_address.sin_addr.s_addr = INADDR_ANY; // 0.0.0.0 or INADDR_ANY for local machine
 
     // Bind the socket to our specified IP and port

@@ -40,7 +40,7 @@ int main(void) {
     server_address.sin_family = AF_INET;
     server_address.sin_port = htons(9002); // takes care of converting the port number to the right bit format
 
-    server_address.sin_addr.s_addr = INADDR_ANY; // 0.0.0.0 or INADDR_ANY for local machine
+    server_address.sin_addr.s_addr = '0.0.0.0'; // 0.0.0.0 or INADDR_ANY for local machine
 
     int connection_status = connect(network_socket, (struct socketaddr *) &server_address, sizeof(server_address));
     if (connection_status != 0) {
