@@ -36,11 +36,69 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+
+
+
+
+#include <inttypes.h>
+
 #define MAX 360
+#define REQUEST_PACKET_SIZE 48 + 1
+#define SIZE_HASH 32
+#define SIZE_START 8
+#define SIZE_P 1
 
 #define SA struct sockaddr
 
-void func(int connfd)
+
+typedef struct {
+    char *hash;
+    char *start;
+    char p;
+} Request;
+
+Request *create_empty_request() {
+    Request *output = NULL;
+    output  = malloc(sizeof(Request));
+    if (output != NULL) {
+        output->hash = calloc(SIZE_HASH, sizeof(char));
+        output->start = calloc(SIZE_START, sizeof(char));
+        if (output->hash != NULL && output->start != NULL) {
+            output->start = 0;
+            output->p = 0;
+            return output;
+        }
+    }
+    return NULL;
+}
+
+
+Request *getRequest(const char *all_bytes) {
+    if (all_bytes != NULL) {
+        printf("----TEST----\n");
+        printf("Original: %s\n", all_bytes);
+
+        Request *output = create_empty_request();
+
+        strncpy(output->hash, all_bytes, SIZE_HASH);
+        all_bytes = all_bytes + SIZE_HASH;
+        printf("Hash: %s\n", output->hash);
+
+        strncpy(output->start, all_bytes, SIZE_START); // SEG FAULT ICI. PROBLEME AVEC L'ACCES A ALL_BYTES...
+        all_bytes = all_bytes + SIZE_START;
+        printf("Start: %s\n", output->start);
+
+        output->p = all_bytes[0];
+        printf("P: %c\n", output->p);      
+        
+        
+        return output;
+    }
+    
+
+}
+
+int func(int connfd)
 {
     char buff[MAX];
     int n;
@@ -49,14 +107,29 @@ void func(int connfd)
         bzero(buff, MAX);
 
         // read the message from client and copy it in buffer
-        read(connfd, buff, sizeof(buff));
+        size_t length = read(connfd, buff, sizeof(buff));
+        if (length != REQUEST_PACKET_SIZE) {
+            fprintf(stderr, "ERROR: Unable to read %d elements, read only %zu elements.\n", REQUEST_PACKET_SIZE, length);
+            return -2;
+        }
+
         // print buffer which contains the client contents
-        printf("From client: %s\t To client : ", buff);
-        bzero(buff, MAX);
+        printf("From client: %s\t To client : \n", buff);
+        
+
+
+
+        Request *request = getRequest(buff);
+        if (request == NULL) {
+            fprintf(stderr, "ERROR: Request is NULL.\n");
+            return -3;
+        }        
+
+
+
         n = 0;
         // copy server message in the buffer
-        while ((buff[n++] = getchar()) != '\n')
-            ;
+        while ((buff[n++] = getchar()) != '\n');
 
         // and send that buffer to client
         write(connfd, buff, sizeof(buff));
@@ -66,11 +139,21 @@ void func(int connfd)
             printf("Server Exit...\n");
             break;
         }
+
+        return 0;
+
+
+        free(request->hash);
+        free(request);
     }
 }
 
 int main(int argc, char* argv[]){
-    if(argc <2) printf('%s', "Not enough argument, port number must be specified.");
+    if(argc < 2) {
+        fprintf(stderr, "Not enough argument, port number must be specified.\n");
+        exit(0);
+    }
+
     int port = atoi(argv[1]);
     int sockfd, connfd, len;
     struct sockaddr_in servaddr, cli;
@@ -117,9 +200,15 @@ int main(int argc, char* argv[]){
         printf("server accept the client...\n");
 
     // Function for chatting between client and server
-    func(connfd);
+    int err = func(connfd);
+    if (err != 0) {
+        fprintf(stderr, "Programm interrupted by an error of number: %d\n", err);
+        exit(0);
+    }
 
 
     // After chatting close the socket
     close(sockfd);
+
+    return 0;
 }
