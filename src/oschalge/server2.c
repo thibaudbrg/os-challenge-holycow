@@ -42,30 +42,35 @@
 
 #include <inttypes.h>
 
-#define MAX 360
-#define REQUEST_PACKET_SIZE 48 + 1
+#define MAX 392
+#define REQUEST_PACKET_SIZE 49
 #define SIZE_HASH 32
 #define SIZE_START 8
-#define SIZE_P 1
+#define SIZE_END 8
+#define SIZE_OF_BYTE 8
 
 #define SA struct sockaddr
 
 
 typedef struct {
-    char *hash;
-    char *start;
-    char p;
+    uint8_t* hash;
+    u_int64_t start;
+    u_int64_t end;
+    uint8_t p;
 } Request;
 
 Request *create_empty_request() {
     Request *output = NULL;
     output  = malloc(sizeof(Request));
     if (output != NULL) {
-        output->hash = calloc(SIZE_HASH, sizeof(char));
-        output->start = calloc(SIZE_START, sizeof(char));
-        if (output->hash != NULL && output->start != NULL) {
-            output->start = 0;
+        output->hash = calloc(SIZE_HASH, sizeof(uint8_t));
+        //output->start = calloc(SIZE_START, sizeof(char));
+        //output->end = calloc(SIZE_END, sizeof(char));
+        if (output->hash != NULL) {
             output->p = 0;
+            output->start = 0;
+            output->end = 0;
+            printf("Request created sucessfully!\n");
             return output;
         }
     }
@@ -76,20 +81,40 @@ Request *create_empty_request() {
 Request *getRequest(const char *all_bytes) {
     if (all_bytes != NULL) {
         printf("----TEST----\n");
-        printf("Original: %s\n", all_bytes);
+        printf("Original:\n");
+        for(size_t i = 0; i<REQUEST_PACKET_SIZE;++i){
+            printf("%ld",i);
+            printf(": %d\n", (uint8_t)all_bytes[i]);
+        }
 
         Request *output = create_empty_request();
 
-        strncpy(output->hash, all_bytes, SIZE_HASH);
-        all_bytes = all_bytes + SIZE_HASH;
-        printf("Hash: %s\n", output->hash);
+        printf("Hash\n");
+        for (size_t i=0; i<SIZE_HASH; ++i){
+            output->hash[i]= (uint8_t)all_bytes[i];
+            printf("%ld:",i);
+            printf("%d\n",output->hash[i]);
+        }
 
-        strncpy(output->start, all_bytes, SIZE_START); // SEG FAULT ICI. PROBLEME AVEC L'ACCES A ALL_BYTES...
-        all_bytes = all_bytes + SIZE_START;
-        printf("Start: %s\n", output->start);
 
-        output->p = all_bytes[0];
-        printf("P: %c\n", output->p);      
+        for (size_t i=0; i<SIZE_START; ++i){
+            output->start<<=SIZE_OF_BYTE;
+            output->start|=(u_int64_t)all_bytes[SIZE_HASH+i];
+            output->end<<=SIZE_OF_BYTE;
+            output->end|=(u_int64_t)all_bytes[SIZE_HASH+SIZE_START+i];
+        }
+        printf("Start : %ld\n", output->start);
+        printf("End : %ld\n", output->end);
+
+
+        /*for (size_t i=0; i<SIZE_END; ++i){
+            output->end[i]= all_bytes[SIZE_HASH+SIZE_START+i];
+            printf("%ld:",i);
+            printf("%d\n",(uint8_t)output->end[i]);
+        }*/
+
+        output->p =(u_int8_t)all_bytes[SIZE_HASH+SIZE_START+SIZE_END];
+        printf("P: %d\n", output->p);
         
         
         return output;
@@ -107,7 +132,9 @@ int func(int connfd)
         bzero(buff, MAX);
 
         // read the message from client and copy it in buffer
+        printf("size of buffer : %ld\n", sizeof(buff));
         size_t length = read(connfd, buff, sizeof(buff));
+        printf("The size of the packet received is: %ld\n", length);
         if (length != REQUEST_PACKET_SIZE) {
             fprintf(stderr, "ERROR: Unable to read %d elements, read only %zu elements.\n", REQUEST_PACKET_SIZE, length);
             return -2;
