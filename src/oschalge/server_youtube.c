@@ -32,6 +32,8 @@
 
 int main(int argc, char**argv) {
 
+    if (argc<2) printf('%s',"Not enough argument, please specify the port number.");
+
     char server_message[256] = "You have reached the server!\n\n";
 
     // Create the server_socket
