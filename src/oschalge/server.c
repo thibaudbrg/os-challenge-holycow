@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "messages.h"
 
 #if defined(_WIN32) || defined(_WIN64) || defined(WIN32)
 /* Windows headers */
@@ -19,6 +20,7 @@
 #include <sys/time.h>
 #include <sys/un.h>
 #include <unistd.h>
+
 
 #endif /* _WIN32 */
 
@@ -51,7 +53,6 @@
 
 #define SA struct sockaddr
 
-
 typedef struct {
     uint8_t* hash;
     u_int64_t start;
@@ -59,13 +60,54 @@ typedef struct {
     uint8_t p;
 } Request;
 
-Request *create_empty_request() {
+typedef struct {
+    size_t length;
+    uint8_t **table;
+} Hash_table;
+
+
+u_int64_t compare(Hash_table *table, Request *request) {
+    size_t n = -1;
+    size_t i = 0;
+    while (i < table->length && n == -1) {
+        size_t j = 0;
+        while (j < SIZE_HASH && table->table[j] == request->hash[j]) {
+            if (j == SIZE_HASH - 1) {
+                n = i;
+            }
+            ++j;
+        }
+        ++i;
+    }
+    uint64_t answer = (uint64_t) (n + request->start);
+
+    return answer;
+}
+
+Hash_table *create_hash_table(const Request *request) {
+    Hash_table *hash_table = NULL;
+    hash_table = malloc(sizeof(Hash_table));
+    if (hash_table != NULL) {
+        hash_table->length = request->end - request->start;
+        hash_table->table = calloc(hash_table->length, sizeof(uint8_t *));
+        if (hash_table->table != NULL) {
+            for (size_t i = 0; i < hash_table->length; ++i) {
+                hash_table->table[i] = calloc(SIZE_HASH, sizeof(uint8_t));
+                if (hash_table->table[i] != NULL) {
+                    return hash_table;
+                }
+            }
+        }
+    }
+    return NULL;
+}
+
+
+Request *create_empty_request(void) {
     Request *output = NULL;
     output  = malloc(sizeof(Request));
     if (output != NULL) {
         output->hash = calloc(SIZE_HASH, sizeof(uint8_t));
-        //output->start = calloc(SIZE_START, sizeof(char));
-        //output->end = calloc(SIZE_END, sizeof(char));
         if (output->hash != NULL) {
             output->p = 0;
             output->start = 0;
@@ -89,6 +131,11 @@ Request *getRequest(const char *all_bytes) {
 
         Request *output = create_empty_request();
 
+        if (output == NULL) {
+            fprintf(stderr, "ERROR: Request is NULL.\n");
+            return -3;
+        }
+
         printf("Hash\n");
         for (size_t i=0; i<SIZE_HASH; ++i){
             output->hash[i]= (uint8_t)all_bytes[i];
@@ -106,14 +153,7 @@ Request *getRequest(const char *all_bytes) {
         printf("Start : %ld\n", output->start);
         printf("End : %ld\n", output->end);
 
-
-        /*for (size_t i=0; i<SIZE_END; ++i){
-            output->end[i]= all_bytes[SIZE_HASH+SIZE_START+i];
-            printf("%ld:",i);
-            printf("%d\n",(uint8_t)output->end[i]);
-        }*/
-
-        output->p =(u_int8_t)all_bytes[SIZE_HASH+SIZE_START+SIZE_END];
+        output->p = (u_int8_t) all_bytes[SIZE_HASH + SIZE_START + SIZE_END];
         printf("P: %d\n", output->p);
         
         
@@ -121,6 +161,23 @@ Request *getRequest(const char *all_bytes) {
     }
     
 
+}
+
+uint8_t *hash(uint64_t *to_hash) {
+    uint8_t *pointer_to_hash = to_hash;
+    uint8_t *hashed = calloc(SIZE_HASH, sizeof(uint8_t));
+    if (hashed != NULL) {
+        for (size_t i = 0; i < SIZE_OF_BYTE; ++i) {
+            hashed[i] = (uint8_t) SHA256(pointer_to_hash, 1, NULL); //setting md to NULL is not thread safe
+            pointer_to_hash++;
+        }
+        return hashed;
+    }
+}
+
+void destroyRequest(Request *request) {
+    free(request->hash);
+    request->hash = NULL;
 }
 
 int func(int connfd)
@@ -147,19 +204,21 @@ int func(int connfd)
 
 
         Request *request = getRequest(buff);
-        if (request == NULL) {
-            fprintf(stderr, "ERROR: Request is NULL.\n");
-            return -3;
-        }        
+        Hash_table *hash_table = create_hash_table(request);
 
+        size_t n = 0;
+        for (u_int64_t i = request->start; i < request->end; ++i) {
+            hash_table->table[n] = hash(&i);
+            n++;
+        }
 
+        u_int64_t answer =htole64( compare(hash_table, request));
 
-        n = 0;
         // copy server message in the buffer
-        while ((buff[n++] = getchar()) != '\n');
+        //while ((buff[n++] = getchar()) != '\n');
 
         // and send that buffer to client
-        write(connfd, buff, sizeof(buff));
+        write(connfd, answer, sizeof());
 
         // if msg contains "Exit" then server exit and chat ended.
         if (strncmp("exit", buff, 4) == 0) {
@@ -170,8 +229,7 @@ int func(int connfd)
         return 0;
 
 
-        free(request->hash);
-        free(request);
+        destroyRequest(request);
     }
 }
 
