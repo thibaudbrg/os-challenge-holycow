@@ -80,7 +80,9 @@ u_int64_t compare(Hash_table *table, Request *request) {
         }
         ++i;
     }
-    uint64_t answer = (uint64_t) (n + request->start);
+    uint64_t answer = (uint64_t) n + request->start;
+    printf("ANSWER:\n");
+    printf("%ld\n", answer);
 
     return answer;
 }
@@ -121,7 +123,7 @@ Request *create_empty_request(void) {
 }
 
 
-Request *getRequest(const char *all_bytes) {
+Request *getRequest(const unsigned char *all_bytes) {
     if (all_bytes != NULL) {
         printf("----TEST----\n");
         printf("Original:\n");
@@ -152,8 +154,6 @@ Request *getRequest(const char *all_bytes) {
             output->end<<=SIZE_OF_BYTE;
             output->end|=(u_int64_t)all_bytes[SIZE_HASH+SIZE_START+i];
         }
-        printf("Start : %llu\n", output->start);
-        printf("End : %llu\n", output->end);
 
         output->p = (u_int8_t) all_bytes[SIZE_HASH + SIZE_START + SIZE_END];
         printf("P: %d\n", output->p);
@@ -166,17 +166,24 @@ Request *getRequest(const char *all_bytes) {
 
 }
 
-uint8_t *hash(uint64_t *to_hash) {
-    uint64_t *pointer_to_hash = to_hash; // j'ai changé le type de uint8_t à 64
-    uint8_t *hashed = calloc(SIZE_HASH, sizeof(uint8_t));
-    if (hashed != NULL) {
-        for (size_t i = 0; i < SIZE_OF_BYTE; ++i) {
-            hashed[i] = (uint8_t) SHA256(pointer_to_hash, 1, NULL); //setting md to NULL is not thread safe
-            pointer_to_hash++;
-        }
-        return hashed;
+uint8_t *hash(const uint64_t *to_hash) {
+    char buff[SIZE_OF_BYTE];
+    snprintf(buff, SIZE_OF_BYTE, "%"PRIu64, *to_hash);
+    //printf("Buffer (char[]): %s\n", buff);
+    unsigned char *hashed = SHA256(buff, strlen(buff), NULL);
 
-    } else return NULL;
+    // printf("SHA256 (unsigned char *):");
+    // for (int i = 0; i < 32; i++) {
+    //     printf("%02x", hashed[i]);
+    // }
+    // printf("\n");
+
+
+    uint8_t *result = calloc(SIZE_HASH, sizeof(uint8_t));
+    for (size_t i = 0; i < SIZE_HASH; ++i) {
+        result[i] = hashed[i];
+    }
+    return result;
 }
 
 void destroyRequest(Request *request) {
@@ -191,6 +198,9 @@ int func(int connfd)
     // infinite loop for chat
     for (;;) {
         bzero(buff, MAX);
+
+
+
 
         // read the message from client and copy it in buffer
         printf("size of buffer : %ld\n", sizeof(buff));
@@ -230,14 +240,30 @@ int func(int connfd)
             break;
         }
 
-// la on avait un return avant destroy
-        destroyRequest(request);
+        // We free the request
+        destroy_request(request);
+        request = NULL;
+        free(request);
+
+        // We free the hash_table
+        destroy_hash_table(hash_table);
+        hash_table = NULL;
+        free(hash_table);
     }
     return 0;
 }
 
-int main(int argc, char* argv[]){
-    if(argc < 2) {
+int main(int argc, char *argv[]) {
+    printf("FIRST\n");
+    uint64_t TEN = 10;
+    uint8_t *hashed = hash(&TEN);
+    printf("SHA256 (uint8_t): ");
+    for (size_t i = 0; i < SIZE_HASH; ++i) {
+        printf("%d/", hashed[i]);
+    }
+    printf("\n");
+
+    if (argc < 2) {
         fprintf(stderr, "Not enough argument, port number must be specified.\n");
         exit(0);
     }
