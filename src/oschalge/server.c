@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "messages.h"
-
+//#include <openssl/sha.h>
 #if defined(_WIN32) || defined(_WIN64) || defined(WIN32)
 /* Windows headers */
 #include <winsock2.h>
@@ -46,6 +46,7 @@
 
 #define MAX 392
 #define REQUEST_PACKET_SIZE 49
+#define RESPONSE_PACKET_SIZE 8
 #define SIZE_HASH 32
 #define SIZE_START 8
 #define SIZE_END 8
@@ -71,7 +72,7 @@ u_int64_t compare(Hash_table *table, Request *request) {
     size_t i = 0;
     while (i < table->length && n == -1) {
         size_t j = 0;
-        while (j < SIZE_HASH && table->table[j] == request->hash[j]) {
+        while (j < SIZE_HASH && *(table->table[j]) == request->hash[j]) {
             if (j == SIZE_HASH - 1) {
                 n = i;
             }
@@ -133,7 +134,8 @@ Request *getRequest(const char *all_bytes) {
 
         if (output == NULL) {
             fprintf(stderr, "ERROR: Request is NULL.\n");
-            return -3;
+            return NULL ;
+            //-3;
         }
 
         printf("Hash\n");
@@ -150,21 +152,22 @@ Request *getRequest(const char *all_bytes) {
             output->end<<=SIZE_OF_BYTE;
             output->end|=(u_int64_t)all_bytes[SIZE_HASH+SIZE_START+i];
         }
-        printf("Start : %ld\n", output->start);
-        printf("End : %ld\n", output->end);
+        printf("Start : %llu\n", output->start);
+        printf("End : %llu\n", output->end);
 
         output->p = (u_int8_t) all_bytes[SIZE_HASH + SIZE_START + SIZE_END];
         printf("P: %d\n", output->p);
         
         
         return output;
-    }
-    
+
+    } else return NULL; // on doit retourner ca si all bytes est null (ca manquait)
+
 
 }
 
 uint8_t *hash(uint64_t *to_hash) {
-    uint8_t *pointer_to_hash = to_hash;
+    uint64_t *pointer_to_hash = to_hash; // j'ai changé le type de uint8_t à 64
     uint8_t *hashed = calloc(SIZE_HASH, sizeof(uint8_t));
     if (hashed != NULL) {
         for (size_t i = 0; i < SIZE_OF_BYTE; ++i) {
@@ -172,7 +175,8 @@ uint8_t *hash(uint64_t *to_hash) {
             pointer_to_hash++;
         }
         return hashed;
-    }
+
+    } else return NULL;
 }
 
 void destroyRequest(Request *request) {
@@ -218,7 +222,7 @@ int func(int connfd)
         //while ((buff[n++] = getchar()) != '\n');
 
         // and send that buffer to client
-        write(connfd, answer, sizeof());
+        write(connfd, &answer, RESPONSE_PACKET_SIZE);
 
         // if msg contains "Exit" then server exit and chat ended.
         if (strncmp("exit", buff, 4) == 0) {
@@ -226,11 +230,10 @@ int func(int connfd)
             break;
         }
 
-        return 0;
-
-
+// la on avait un return avant destroy
         destroyRequest(request);
     }
+    return 0;
 }
 
 int main(int argc, char* argv[]){
@@ -276,7 +279,7 @@ int main(int argc, char* argv[]){
     len = sizeof(cli);
 
     // Accept the data packet from client and verification
-    connfd = accept(sockfd, (SA*)&cli, &len);
+    connfd = accept(sockfd, (SA*)&cli, (socklen_t*)&len);
     if (connfd < 0) {
         printf("server accept failed...\n");
         exit(0);
