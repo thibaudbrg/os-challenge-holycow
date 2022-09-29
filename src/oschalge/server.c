@@ -68,7 +68,7 @@ u_int64_t compare(Hash_table *table, Request *request) {
     size_t i = 0;
     while (i < table->length && n == -1) {
         size_t j = 0;
-        while (j < SIZE_HASH && *(table->table[j]) == request->hash[j]) {
+        while (j < SIZE_HASH && table->table[i][j] == request->hash[j]) {
             if (j == SIZE_HASH - 1) {
                 n = i;
             }
@@ -133,19 +133,6 @@ void destroy_request(Request *request) {
 
 Request *getRequest(const unsigned char *all_bytes) {
     if (all_bytes != NULL) {
-        printf("----TEST----\n");
-        printf("Original (uint8_t):\n");
-        for (size_t i = 0; i < REQUEST_PACKET_SIZE; ++i) {
-            printf("%d/", (uint8_t) all_bytes[i]);
-        }
-
-        printf("\n");
-        printf("Original (Char *): \n");
-        for (size_t i = 0; i < REQUEST_PACKET_SIZE; ++i) {
-            printf("%c", all_bytes[i]);
-        }
-        printf("\n");
-
         Request *output = create_empty_request();
 
         if (output == NULL) {
@@ -173,18 +160,12 @@ Request *getRequest(const unsigned char *all_bytes) {
     }
 }
 
-uint8_t *hash(const uint64_t *to_hash) {
+uint8_t *hash(uint64_t *to_hash) {
+
+    // Copy in the buffer the to_hash value but in a char* type
     char buff[SIZE_OF_BYTE];
     snprintf(buff, SIZE_OF_BYTE, "%"PRIu64, *to_hash);
-    //printf("Buffer (char[]): %s\n", buff);
-    unsigned char *hashed = SHA256(buff, strlen(buff), NULL);
-
-    // printf("SHA256 (unsigned char *):");
-    // for (int i = 0; i < 32; i++) {
-    //     printf("%02x", hashed[i]);
-    // }
-    // printf("\n");
-
+    unsigned char *hashed = SHA256(to_hash, 8, NULL);
 
     uint8_t *result = calloc(SIZE_HASH, sizeof(uint8_t));
     for (size_t i = 0; i < SIZE_HASH; ++i) {
@@ -226,12 +207,10 @@ int func(int connfd) {
             n++;
         }
 
-        u_int64_t answer = htole64(compare(hash_table, request));
+        u_int64_t answer = htobe64(compare(hash_table, request));
 
-        // copy server message in the buffer
-        //while ((buff[n++] = getchar()) != '\n');
-
-        // and send that buffer to client
+        // copy server message in the buffer and send that buffer to client
+        bzero(buff, MAX);
         write(connfd, &answer, RESPONSE_PACKET_SIZE);
 
         // if msg contains "Exit" then server exit and chat ended.
@@ -254,15 +233,6 @@ int func(int connfd) {
 }
 
 int main(int argc, char *argv[]) {
-    printf("FIRST\n");
-    uint64_t TEN = 10;
-    uint8_t *hashed = hash(&TEN);
-    printf("SHA256 (uint8_t): ");
-    for (size_t i = 0; i < SIZE_HASH; ++i) {
-        printf("%d/", hashed[i]);
-    }
-    printf("\n");
-
     if (argc < 2) {
         fprintf(stderr, "Not enough argument, port number must be specified.\n");
         exit(0);

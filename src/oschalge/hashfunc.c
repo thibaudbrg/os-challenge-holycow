@@ -10,7 +10,7 @@ int main(int argcount, char **args) {
         return 1;
     }
     printf("INPUT: %s\n", args[1]);
-    unsigned char *hash = SHA256(args[1], strlen(args[1]), NULL);
+    unsigned char *hash = SHA256(args[1], 8, NULL);
     printf("SHA256: ");
     for (int i = 0; i < 32; i++) {
         printf("%02x", hash[i]);}
