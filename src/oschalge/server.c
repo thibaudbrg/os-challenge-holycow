@@ -63,6 +63,17 @@ typedef struct {
 } Hash_table;
 
 
+void print_SHA(const unsigned char *SHA) {
+    if (SHA != NULL) {
+        putchar('\n');
+        for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+            printf("%02x", SHA[i]);
+        }
+        putchar('\n');
+    }
+}
+
+
 u_int64_t compare(Hash_table *table, Request *request) {
     size_t n = -1;
     size_t i = 0;
@@ -77,9 +88,6 @@ u_int64_t compare(Hash_table *table, Request *request) {
         ++i;
     }
     uint64_t answer = (uint64_t) n + request->start;
-    printf("ANSWER:\n");
-    printf("%ld\n", answer);
-
     return answer;
 }
 
@@ -131,20 +139,18 @@ void destroy_request(Request *request) {
 }
 
 
-Request *getRequest(const unsigned char *all_bytes) {
+Request *getRequest(const unsigned char *all_bytes, size_t length) {
     if (all_bytes != NULL) {
         Request *output = create_empty_request();
 
         if (output == NULL) {
             fprintf(stderr, "ERROR: Request is NULL.\n");
             return NULL;
-            //-3;
         }
 
         for (size_t i = 0; i < SIZE_HASH; ++i) {
             output->hash[i] = (uint8_t) all_bytes[i];
         }
-
         for (size_t i = 0; i < SIZE_START; ++i) {
             output->start <<= SIZE_OF_BYTE;
             output->start |= (u_int64_t) all_bytes[SIZE_HASH + i];
@@ -182,9 +188,6 @@ int func(int connfd) {
     while (inf_loop) {
         bzero(buff, MAX);
 
-
-
-
         // read the message from client and copy it in buffer
         printf("Size of buffer : %ld\n", sizeof(buff));
         size_t length = read(connfd, buff, sizeof(buff));
@@ -196,15 +199,14 @@ int func(int connfd) {
         }
 
         // print buffer which contains the client contents
-
-
-        Request *request = getRequest(buff);
+        Request *request = getRequest(buff, MAX);
         Hash_table *hash_table = create_hash_table(request);
 
+        // Hash all possibilities and write them into the hash table
         size_t n = 0;
         for (u_int64_t i = request->start; i < request->end; ++i) {
             hash_table->table[n] = hash(&i);
-            n++;
+            ++n;
         }
 
         u_int64_t answer = htobe64(compare(hash_table, request));
@@ -301,11 +303,5 @@ int main(int argc, char *argv[]) {
 
     // After chatting close the socket
     close(sockfd);
-
-
-    // free the stuff
-    hashed = NULL;
-    free(hashed);
-
     return 0;
 }
