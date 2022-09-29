@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "messages.h"
-//#include <openssl/sha.h>
+
 #if defined(_WIN32) || defined(_WIN64) || defined(WIN32)
 /* Windows headers */
 #include <winsock2.h>
@@ -160,10 +160,9 @@ Request *getRequest(const unsigned char *all_bytes) {
         
         
         return output;
-
-    } else return NULL; // on doit retourner ca si all bytes est null (ca manquait)
-
-
+    } else {
+        return NULL;
+    }
 }
 
 uint8_t *hash(const uint64_t *to_hash) {
