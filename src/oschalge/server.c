@@ -250,21 +250,21 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "ERROR: Port number overflow or underflow or too long.\n");
         exit(0);
     }
-    // convert from long
-    int port = tmp;
 
-
-    int sockfd, connfd, len;
-    struct sockaddr_in servaddr, cli;
 
     // socket create and verification
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd == -1) {
-        fprintf(stderr, "socket creation failed...\n");
-        exit(0);
-    } else
-        printf("Socket successfully created..\n");
-    bzero(&servaddr, sizeof(servaddr));
+
+    int port = tmp;
+    int sockfd, connfd, len;
+    struct sockaddr_in servaddr, cli;
+    while (1) {
+        sockfd = socket(AF_INET, SOCK_STREAM, 0);
+        if (sockfd == -1) {
+            fprintf(stderr, "socket creation failed...\n");
+            exit(0);
+        } else
+            printf("Socket successfully created..\n");
+        bzero(&servaddr, sizeof(servaddr));
 
     // assign IP, PORT
     servaddr.sin_family = AF_INET;
@@ -294,14 +294,16 @@ int main(int argc, char *argv[]) {
     } else
         printf("server accept the client...\n");
 
-    // Function for chatting between client and server
-    int err_chat = func(connfd);
-    if (err_chat != 0) {
-        fprintf(stderr, "Programm interrupted by an error of number: %d\n", err_chat);
-        exit(0);
+        // Function for chatting between client and server
+        int err_chat = func(connfd);
+        if (err_chat != 0) {
+            fprintf(stderr, "Program interrupted by an error of number: %d\n", err_chat);
+            exit(0);
+        }
+        close(connfd);
+        close(sockfd);
     }
 
-    // After chatting close the socket
-    close(sockfd);
     return 0;
+
 }
