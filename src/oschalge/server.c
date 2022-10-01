@@ -182,55 +182,51 @@ uint8_t *hash(uint64_t *to_hash) {
 
 
 int func(int connfd) {
-    // infinite loop for chat
     unsigned char buff[MAX];
-    int inf_loop = 1;
-    while (inf_loop) {
-        bzero(buff, MAX);
+    bzero(buff, MAX);
 
-        // read the message from client and copy it in buffer
-        printf("Size of buffer : %ld\n", sizeof(buff));
-        size_t length = read(connfd, buff, sizeof(buff));
-        printf("The size of the packet received is: %ld\n", length);
-        if (length != REQUEST_PACKET_SIZE) {
-            fprintf(stderr, "ERROR: Unable to read %d elements, read only %zu elements.\n", REQUEST_PACKET_SIZE,
-                    length);
-            return -2;
-        }
-
-        // print buffer which contains the client contents
-        Request *request = getRequest(buff, MAX);
-        Hash_table *hash_table = create_hash_table(request);
-
-        // Hash all possibilities and write them into the hash table
-        size_t n = 0;
-        for (u_int64_t i = request->start; i < request->end; ++i) {
-            hash_table->table[n] = hash(&i);
-            ++n;
-        }
-
-        u_int64_t answer = htobe64(compare(hash_table, request));
-
-        // copy server message in the buffer and send that buffer to client
-        bzero(buff, MAX);
-        write(connfd, &answer, RESPONSE_PACKET_SIZE);
-
-        // if msg contains "Exit" then server exit and chat ended.
-        if (strncmp("exit", buff, 4) == 0) {
-            printf("Server Exit...\n");
-            inf_loop = 0;
-        }
-
-        // We free the request
-        destroy_request(request);
-        request = NULL;
-        free(request);
-
-        // We free the hash_table
-        destroy_hash_table(hash_table);
-        hash_table = NULL;
-        free(hash_table);
+    // read the message from client and copy it in buffer
+    printf("Size of buffer : %ld\n", sizeof(buff));
+    size_t length = read(connfd, buff, sizeof(buff));
+    printf("The size of the packet received is: %ld\n", length);
+    if (length != REQUEST_PACKET_SIZE) {
+        fprintf(stderr, "ERROR: Unable to read %d elements, read only %zu elements.\n", REQUEST_PACKET_SIZE,
+                length);
+        return -2;
     }
+
+    // print buffer which contains the client contents
+    Request *request = getRequest(buff, MAX);
+    Hash_table *hash_table = create_hash_table(request);
+
+    // Hash all possibilities and write them into the hash table
+    size_t n = 0;
+    for (u_int64_t i = request->start; i < request->end; ++i) {
+        hash_table->table[n] = hash(&i);
+        ++n;
+    }
+
+    u_int64_t answer = htobe64(compare(hash_table, request));
+
+    // copy server message in the buffer and send that buffer to client
+    bzero(buff, MAX);
+    write(connfd, &answer, RESPONSE_PACKET_SIZE);
+
+    // if msg contains "Exit" then server exit and chat ended.
+    if (strncmp("exit", buff, 4) == 0) {
+        printf("Server Exit...\n");
+    }
+
+    // We free the request
+    destroy_request(request);
+    request = NULL;
+    free(request);
+
+    // We free the hash_table
+    destroy_hash_table(hash_table);
+    hash_table = NULL;
+    free(hash_table);
+
     return 0;
 }
 
@@ -266,33 +262,35 @@ int main(int argc, char *argv[]) {
             printf("Socket successfully created..\n");
         bzero(&servaddr, sizeof(servaddr));
 
-    // assign IP, PORT
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port = htons(port);
+        // assign IP, PORT
+        servaddr.sin_family = AF_INET;
+        servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+        servaddr.sin_port = htons(port);
 
-    // Binding newly created socket to given IP and verification
-    if ((bind(sockfd, (SA *) &servaddr, sizeof(servaddr))) != 0) {
-        fprintf(stderr, "socket bind failed...\n");
-        exit(0);
-    } else
-        printf("Socket successfully binded..\n");
+        // Binding newly created socket to given IP and verification
+        int one = 1;
+        setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
+        if ((bind(sockfd, (SA *) &servaddr, sizeof(servaddr))) != 0) {
+            fprintf(stderr, "socket bind failed...\n");
+            exit(0);
+        } else
+            printf("Socket successfully binded..\n");
 
-    // Now server is ready to listen and verification
-    if ((listen(sockfd, 5)) != 0) {
-        fprintf(stderr, "Listen failed...\n");
-        exit(0);
-    } else
-        printf("Server listening..\n");
-    len = sizeof(cli);
+        // Now server is ready to listen and verification
+        if ((listen(sockfd, 5)) != 0) {
+            fprintf(stderr, "Listen failed...\n");
+            exit(0);
+        } else
+            printf("Server listening..\n");
+        len = sizeof(cli);
 
-    // Accept the data packet from client and verification
-    connfd = accept(sockfd, (SA *) &cli, (socklen_t *) &len);
-    if (connfd < 0) {
-        fprintf(stderr, "server accept failed...\n");
-        exit(0);
-    } else
-        printf("server accept the client...\n");
+        // Accept the data packet from client and verification
+        connfd = accept(sockfd, (SA *) &cli, (socklen_t *) &len);
+        if (connfd < 0) {
+            fprintf(stderr, "server accept failed...\n");
+            exit(0);
+        } else
+            printf("server accept the client...\n");
 
         // Function for chatting between client and server
         int err_chat = func(connfd);
