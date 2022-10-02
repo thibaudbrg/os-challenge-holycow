@@ -1,66 +1,24 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
-#include "messages.h"
-
-#if defined(_WIN32) || defined(_WIN64) || defined(WIN32)
-/* Windows headers */
-#include <winsock2.h>
-#include <windows.h>
-#include <io.h>
-
-#else /* or check here for unix / linux & fail if OS unrecognized */
-/* POSIX headers */
-#include <netdb.h>
-#include <poll.h>
-#include <sys/resource.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <sys/time.h>
-#include <sys/un.h>
-#include <unistd.h>
-
-#endif /* _WIN32 */
-
-/* shared headers */
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-//imports de server youtube en haut
 #include <stdio.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-
+#include <stdint.h>
 #include <inttypes.h>
+#include <limits.h>
+#include <string.h>
 
-#define MAX 392
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include "messages.h"
+#include "hashtable.h"
+#include "request.h"
+
 #define REQUEST_PACKET_SIZE 49
 #define RESPONSE_PACKET_SIZE 8
-#define SIZE_HASH 32
-#define SIZE_START 8
-#define SIZE_END 8
-#define SIZE_OF_BYTE 8
 
 #define SA struct sockaddr
-
-typedef struct {
-    uint8_t *hash;
-    u_int64_t start;
-    u_int64_t end;
-    uint8_t p;
-} Request;
-
-typedef struct {
-    size_t length;
-    uint8_t **table;
-} Hash_table;
 
 
 void print_SHA(const unsigned char *SHA) {
@@ -74,7 +32,7 @@ void print_SHA(const unsigned char *SHA) {
 }
 
 
-u_int64_t compare(Hash_table *table, Request *request) {
+/*u_int64_t compare(Hash_table *table, Request *request) {
     size_t n = -1;
     size_t i = 0;
     while (i < table->length && n == -1) {
@@ -89,89 +47,22 @@ u_int64_t compare(Hash_table *table, Request *request) {
     }
     uint64_t answer = (uint64_t) n + request->start;
     return answer;
-}
+}*/
 
-Hash_table *create_hash_table(const Request *request) {
-    Hash_table *hash_table = NULL;
-    hash_table = malloc(sizeof(Hash_table));
-    if (hash_table != NULL) {
-        hash_table->length = request->end - request->start;
-        hash_table->table = calloc(hash_table->length, sizeof(uint8_t *));
-        if (hash_table->table != NULL) {
-            for (size_t i = 0; i < hash_table->length; ++i) {
-                hash_table->table[i] = calloc(SIZE_HASH, sizeof(uint8_t));
-                if (hash_table->table[i] != NULL) {
-                    return hash_table;
-                }
-            }
+int compare2(const uint8_t *to_compare, Request *request) {
+    int n = 0;
+    size_t j = 0;
+    while (j < SIZE_HASH && to_compare[j] == request->hash[j]) {
+        if (j == SIZE_HASH - 1) {
+            n = 1;
         }
+        ++j;
     }
-    return NULL;
-}
-
-void destroy_hash_table(Hash_table *hash_table) {
-    for (size_t i = 0; i < hash_table->length; ++i) {
-        hash_table->table[i] = NULL;
-    }
-    hash_table->table = NULL;
-    free(hash_table->table);
-}
-
-Request *create_empty_request(void) {
-    Request *output = NULL;
-    output = malloc(sizeof(Request));
-    if (output != NULL) {
-        output->hash = calloc(SIZE_HASH, sizeof(uint8_t));
-        if (output->hash != NULL) {
-            output->p = 0;
-            output->start = 0;
-            output->end = 0;
-            printf("Request created sucessfully!\n");
-            return output;
-        }
-    }
-    return NULL;
-}
-
-void destroy_request(Request *request) {
-    free(request->hash);
-    request->hash = NULL;
-}
-
-
-Request *getRequest(const unsigned char *all_bytes, size_t length) {
-    if (all_bytes != NULL) {
-        Request *output = create_empty_request();
-
-        if (output == NULL) {
-            fprintf(stderr, "ERROR: Request is NULL.\n");
-            return NULL;
-        }
-
-        for (size_t i = 0; i < SIZE_HASH; ++i) {
-            output->hash[i] = (uint8_t) all_bytes[i];
-        }
-        for (size_t i = 0; i < SIZE_START; ++i) {
-            output->start <<= SIZE_OF_BYTE;
-            output->start |= (u_int64_t) all_bytes[SIZE_HASH + i];
-            output->end <<= SIZE_OF_BYTE;
-            output->end |= (u_int64_t) all_bytes[SIZE_HASH + SIZE_START + i];
-        }
-
-        output->p = (u_int8_t) all_bytes[SIZE_HASH + SIZE_START + SIZE_END];
-
-        return output;
-    } else {
-        return NULL;
-    }
+    return n;
 }
 
 uint8_t *hash(uint64_t *to_hash) {
-
-    // Copy in the buffer the to_hash value but in a char* type
-    char buff[SIZE_OF_BYTE];
-    snprintf(buff, SIZE_OF_BYTE, "%"PRIu64, *to_hash);
-    unsigned char *hashed = SHA256(to_hash, 8, NULL);
+    unsigned char *hashed = SHA256((unsigned char *) to_hash, 8, NULL);
 
     uint8_t *result = calloc(SIZE_HASH, sizeof(uint8_t));
     for (size_t i = 0; i < SIZE_HASH; ++i) {
@@ -182,35 +73,47 @@ uint8_t *hash(uint64_t *to_hash) {
 
 
 int func(int connfd) {
-    unsigned char buff[MAX];
-    bzero(buff, MAX);
+    unsigned char buff[REQUEST_PACKET_SIZE];
+    bzero(buff, REQUEST_PACKET_SIZE);
 
     // read the message from client and copy it in buffer
     printf("Size of buffer : %ld\n", sizeof(buff));
     size_t length = read(connfd, buff, sizeof(buff));
     printf("The size of the packet received is: %ld\n", length);
     if (length != REQUEST_PACKET_SIZE) {
-        fprintf(stderr, "ERROR: Unable to read %d elements, read only %zu elements.\n", REQUEST_PACKET_SIZE,
-                length);
+        fprintf(stderr, "ERROR: Unable to read %d elements, read only %zu elements.\n", REQUEST_PACKET_SIZE, length);
         return -2;
     }
 
     // print buffer which contains the client contents
-    Request *request = getRequest(buff, MAX);
+    Request *request = getRequest(buff, REQUEST_PACKET_SIZE);
     Hash_table *hash_table = create_hash_table(request);
 
     // Hash all possibilities and write them into the hash table
+
     size_t n = 0;
+    int result = 0;
+    uint64_t answer;
+
+
     for (u_int64_t i = request->start; i < request->end; ++i) {
         hash_table->table[n] = hash(&i);
+        result = compare2(hash(&i), request);
+        if (result == 1) {
+            // Turn the answer to a big endian encoding
+            answer = htobe64(i);
+            break;
+        }
         ++n;
     }
 
-    u_int64_t answer = htobe64(compare(hash_table, request));
-
     // copy server message in the buffer and send that buffer to client
-    bzero(buff, MAX);
-    write(connfd, &answer, RESPONSE_PACKET_SIZE);
+    bzero(buff, REQUEST_PACKET_SIZE);
+    size_t err = write(connfd, &answer, RESPONSE_PACKET_SIZE);
+    if (err == -1) {
+        fprintf(stderr, "error writing");
+        exit(0);
+    }
 
     // if msg contains "Exit" then server exit and chat ended.
     if (strncmp("exit", buff, 4) == 0) {

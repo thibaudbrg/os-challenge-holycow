@@ -13,10 +13,11 @@ int main(int argcount, char **args) {
     unsigned char *hash = SHA256(args[1], 8, NULL);
     printf("SHA256: ");
     for (int i = 0; i < 32; i++) {
-        printf("%02x", hash[i]);}
+        printf("%02x", hash[i]);
+    }
     printf("\n");
-    for (int i = 0; i < 32 ; ++i) {
-        printf("%d\n", (uint8_t)hash[i]);
+    for (int i = 0; i < 32; ++i) {
+        printf("%d\n", (uint8_t) hash[i]);
     }
 
 
