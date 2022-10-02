@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include "request.h" // Include itself for more security
+#include "messages.h"
 
 Request *create_empty_request(void) {
     Request *output = NULL;
@@ -29,7 +30,7 @@ Request *getRequest(const unsigned char *all_bytes, size_t length) {
     if (all_bytes != NULL) {
         Request *output = create_empty_request();
 
-        if (output == NULL) {
+        /*if (output == NULL) {
             fprintf(stderr, "ERROR: Request is NULL.\n");
             return NULL;
         }
@@ -46,7 +47,18 @@ Request *getRequest(const unsigned char *all_bytes, size_t length) {
 
         output->p = (u_int8_t) all_bytes[SIZE_HASH + SIZE_START + SIZE_END];
 
+        return output;*/
+
+        output->hash = all_bytes;
+        uint64_t *start = all_bytes + PACKET_REQUEST_START_OFFSET;
+        output->start = htobe64(*start);
+        uint64_t *end = all_bytes + PACKET_REQUEST_END_OFFSET;
+        output->end = htobe64(*end);
+        output->p = all_bytes + PACKET_REQUEST_PRIO_OFFSET;
+
         return output;
+
+
     } else {
         return NULL;
     }

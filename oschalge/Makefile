@@ -14,7 +14,6 @@ CPPFLAGS := -Iinclude -MMD -MP # -I is a preprocessor flag, not a compiler flag
 CFLAGS   := -Wall              # some warnings about bad code
 LDFLAGS  := -Llib              # -L is a linker flag
 LDLIBS := -lcrypto
-#CFLAGS += -Ofast
 
 # Default target
 all: $(EXE)
@@ -48,12 +47,3 @@ clean:
 
 # Include the automatic dependency generation (.d files to .o files with MakeFile rules for us to use)
 -include $(OBJ:.o=.d) # The dash silences errors when files don't exist (yet)
-
-
-
-
-# server: server.o hashtable.o request.o
-
-# hashtable.o: src/hashtable.c hashtable.h request.h
-# request.o: src/request.c request.h
-# server.o: src/server.c messages.h hashtable.h request.h

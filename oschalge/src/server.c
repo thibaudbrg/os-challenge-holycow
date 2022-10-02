@@ -49,7 +49,7 @@ void print_SHA(const unsigned char *SHA) {
     return answer;
 }*/
 
-int compare2(const uint8_t *to_compare, Request *request) {
+/*int compare2(const uint8_t *to_compare, Request *request) {
     int n = 0;
     size_t j = 0;
     while (j < SIZE_HASH && to_compare[j] == request->hash[j]) {
@@ -59,16 +59,22 @@ int compare2(const uint8_t *to_compare, Request *request) {
         ++j;
     }
     return n;
+}*/
+
+int compare3(const uint8_t *to_compare, Request *request) {
+    if (memcmp(to_compare, request->hash, SIZE_HASH) == 0) return 1;
+    return 0;
 }
 
 uint8_t *hash(uint64_t *to_hash) {
-    unsigned char *hashed = SHA256((unsigned char *) to_hash, 8, NULL);
+    //unsigned char *hashed = SHA256((unsigned char *) to_hash, 8, NULL);
+    uint8_t *hashed = SHA256((unsigned char *) to_hash, 8, NULL);
 
-    uint8_t *result = calloc(SIZE_HASH, sizeof(uint8_t));
-    for (size_t i = 0; i < SIZE_HASH; ++i) {
+    //uint8_t *result = calloc(SIZE_HASH, sizeof(uint8_t));
+    /*for (size_t i = 0; i < SIZE_HASH; ++i) {
         result[i] = hashed[i];
-    }
-    return result;
+    }*/
+    return hashed;
 }
 
 
@@ -97,7 +103,7 @@ int func(int connfd) {
     uint64_t answer;
 
 
-    while (compare2(hash(&i), request) != 1 && i < request->end ){
+    while (compare3(hash(&i), request) != 1 && i < request->end) {
         ++i;
     }
     answer = htobe64(i);
@@ -126,9 +132,9 @@ int func(int connfd) {
     }
 
     // We free the request
-    destroy_request(request);
-    request = NULL;
-    free(request);
+    //destroy_request(request);
+    //request = NULL;
+    //free(request);
 
     // We free the hash_table
     //destroy_hash_table(hash_table);

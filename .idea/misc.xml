@@ -17,5 +17,7 @@
       </MakefileProjectSettings>
     </option>
   </component>
-  <component name="MakefileWorkspace" PROJECT_DIR="$PROJECT_DIR$/oschalge" />
+  <component name="MakefileWorkspace" PROJECT_DIR="$PROJECT_DIR$/oschalge">
+    <contentRoot DIR="$PROJECT_DIR$" />
+  </component>
 </project>
