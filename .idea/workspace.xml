@@ -6,7 +6,7 @@
   <component name="CMakeReloadState">
     <option name="reloaded" value="true" />
   </component>
-  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+  <component name="CMakeRunConfigurationManager">
     <generated>
       <config projectName="os-challenge-holycow" targetName="all" />
       <config projectName="os-challenge-holycow" targetName="bin" />
@@ -19,20 +19,22 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b4f93fd-58d4-46c0-b1bd-2c47e88f5a15" name="Changes" comment="multiple request works">
-      <change afterPath="$PROJECT_DIR$/.idea/os-challenge-holycow2.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/os-challenge-holycow.iml" beforeDir="false" />
+    <list default="true" id="cc5780fb-ed9d-4982-abc3-98bccfc8e66b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/os-challenge-holycow2.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/oschalge/Makefile" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/oschalge/bin/server" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/oschalge/src/request.c" beforeDir="false" afterPath="$PROJECT_DIR$/oschalge/src/request.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/oschalge/src/server.c" beforeDir="false" afterPath="$PROJECT_DIR$/oschalge/src/server.c" afterDir="false" />
-    </list>
-    <list id="63bdbf4b-e732-43a5-8d12-d8512cf0b71d" name="Changes by onsriahi" comment="" />
-    <list id="f70b1221-29a5-4553-8e56-91f99e91c079" name="Changes by Tibo" comment="">
-      <change beforePath="$PROJECT_DIR$/oschalge/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/oschalge/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/oschalge/src/request.c" beforeDir="false" afterPath="$PROJECT_DIR$/oschalge/src/request.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/oschalge/include/hashtable.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/oschalge/include/messages.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/oschalge/include/request.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/oschalge/src/hashfunc.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/oschalge/src/hashtable.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/oschalge/src/request.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/oschalge/src/server.c" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,6 +45,9 @@
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
     <projectState path="$PROJECT_DIR$/oschalge">
       <ProjectState />
     </projectState>
@@ -57,16 +62,6 @@
       <filtered-out-file-type name="TAG" />
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
-  </component>
-  <component name="LineStatusTrackerManager">
-    <file path="$PROJECT_DIR$/oschalge/src/request.c">
-      <ranges>
-        <range start1="5" end1="5" start2="5" end2="6" changelist="f70b1221-29a5-4553-8e56-91f99e91c079" />
-        <range start1="31" end1="32" start2="32" end2="33" changelist="8b4f93fd-58d4-46c0-b1bd-2c47e88f5a15" />
-        <range start1="48" end1="48" start2="49" end2="58" changelist="8b4f93fd-58d4-46c0-b1bd-2c47e88f5a15" />
-        <range start1="49" end1="49" start2="59" end2="61" changelist="8b4f93fd-58d4-46c0-b1bd-2c47e88f5a15" />
-      </ranges>
-    </file>
   </component>
   <component name="MakefileLocalSettings">
     <option name="availableProjects">
@@ -87,6 +82,27 @@
             </list>
           </value>
         </entry>
+        <entry>
+          <key>
+            <ExternalProjectPojo>
+              <option name="name" value="os-challenge-holycow" />
+              <option name="path" value="$PROJECT_DIR$" />
+            </ExternalProjectPojo>
+          </key>
+          <value>
+            <list>
+              <ExternalProjectPojo>
+                <option name="name" value="os-challenge-holycow" />
+                <option name="path" value="$PROJECT_DIR$" />
+              </ExternalProjectPojo>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="projectSyncType">
+      <map>
+        <entry key="$PROJECT_DIR$/oschalge" value="RE_IMPORT" />
       </map>
     </option>
   </component>
@@ -106,9 +122,12 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "last_opened_file_path": "D:/thiba/Music/os-challenge-common/os-challenge-holycow",
+    "node.js.selected.package.tslint": "(autodetect)"
+  }
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\thiba\Music\os-challenge-common\os-challenge-holycow\oschalge" />
@@ -145,65 +164,6 @@
       <makefile filename="$PROJECT_DIR$/oschalge/Makefile" target="clean" workingDirectory="" arguments="">
         <envs />
       </makefile>
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Nosetests">
-      <module name="os-challenge-holycow" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_regexPattern" value="&quot;&quot;" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Twisted Trial">
-      <module name="os-challenge-holycow" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Unittests">
-      <module name="os-challenge-holycow" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="py.test">
-      <module name="os-challenge-holycow" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_keywords" value="&quot;&quot;" />
-      <option name="_new_parameters" value="&quot;&quot;" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
     <list>

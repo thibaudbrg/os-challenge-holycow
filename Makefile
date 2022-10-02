@@ -5,7 +5,7 @@ OBJ_DIR := obj
 BIN_DIR := bin
 
 # Name of executable, source files, object files
-EXE := $(BIN_DIR)/server
+EXE := $(CURDIR)/server
 SRC = $(filter-out src/hashfunc.c, $(wildcard $(SRC_DIR)/*.c))
 OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
