@@ -11,7 +11,7 @@ OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 # Flags
 CPPFLAGS := -Iinclude -MMD -MP # -I is a preprocessor flag, not a compiler flag
-CFLAGS   := -Wall              # some warnings about bad code
+CFLAGS   := -Wall -O3             # some warnings about bad code
 LDFLAGS  := -Llib              # -L is a linker flag
 LDLIBS := -lcrypto
 
