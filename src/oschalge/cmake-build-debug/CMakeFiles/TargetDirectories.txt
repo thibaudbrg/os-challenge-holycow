@@ -1,3 +1,0 @@
-/mnt/d/thiba/Music/os-challenge-common/os-challenge-holycow/src/oschalge/cmake-build-debug/CMakeFiles/oschalge.dir
-/mnt/d/thiba/Music/os-challenge-common/os-challenge-holycow/src/oschalge/cmake-build-debug/CMakeFiles/edit_cache.dir
-/mnt/d/thiba/Music/os-challenge-common/os-challenge-holycow/src/oschalge/cmake-build-debug/CMakeFiles/rebuild_cache.dir

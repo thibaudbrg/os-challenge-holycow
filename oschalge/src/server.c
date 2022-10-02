@@ -87,16 +87,21 @@ int func(int connfd) {
 
     // print buffer which contains the client contents
     Request *request = getRequest(buff, REQUEST_PACKET_SIZE);
-    Hash_table *hash_table = create_hash_table(request);
+    //Hash_table *hash_table = create_hash_table(request);
 
     // Hash all possibilities and write them into the hash table
 
-    size_t n = 0;
-    int result = 0;
+    //size_t n = 0;
+    //int result = 0;
+    u_int64_t i = request->start;
     uint64_t answer;
 
 
-    for (u_int64_t i = request->start; i < request->end; ++i) {
+    while (compare2(hash(&i), request) != 1 && i < request->end ){
+        ++i;
+    }
+    answer = htobe64(i);
+    /*for (u_int64_t i = request->start; i < request->end; ++i) {
         hash_table->table[n] = hash(&i);
         result = compare2(hash(&i), request);
         if (result == 1) {
@@ -105,7 +110,7 @@ int func(int connfd) {
             break;
         }
         ++n;
-    }
+    }*/
 
     // copy server message in the buffer and send that buffer to client
     bzero(buff, REQUEST_PACKET_SIZE);
@@ -126,9 +131,9 @@ int func(int connfd) {
     free(request);
 
     // We free the hash_table
-    destroy_hash_table(hash_table);
-    hash_table = NULL;
-    free(hash_table);
+    //destroy_hash_table(hash_table);
+    //hash_table = NULL;
+    //free(hash_table);
 
     return 0;
 }

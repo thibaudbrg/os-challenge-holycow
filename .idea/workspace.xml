@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="CMakeReloadState">
+    <option name="reloaded" value="true" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated>
+      <config projectName="os-challenge-holycow" targetName="all" />
+      <config projectName="os-challenge-holycow" targetName="bin" />
+      <config projectName="os-challenge-holycow" targetName="obj" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="cc5780fb-ed9d-4982-abc3-98bccfc8e66b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/.idea/src.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/.idea/oschalge.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/.cmake/api/v1/query/cache-v2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/.cmake/api/v1/query/cmakeFiles-v1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/.cmake/api/v1/query/codemodel-v2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/.cmake/api/v1/query/toolchains-v1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/.cmake/api/v1/reply/cache-v2-7b0855527cafa7fda4bf.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/.cmake/api/v1/reply/cmakeFiles-v1-28872074981d3eda6932.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/.cmake/api/v1/reply/codemodel-v2-08e2eee459629c532bb1.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/.cmake/api/v1/reply/directory-.-Debug-f5ebdc15457944623624.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/.cmake/api/v1/reply/index-2022-10-02T09-33-52-0306.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/.cmake/api/v1/reply/target-oschalge-Debug-f7084b63738731fe9c78.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/.cmake/api/v1/reply/toolchains-v1-1a22d9ad962073fe4f39.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/.ninja_deps" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/.ninja_log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeCache.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/3.24.1/CMakeCCompiler.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/3.24.1/CMakeDetermineCompilerABI_C.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/3.24.1/CMakeSystem.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/3.24.1/CompilerIdC/CMakeCCompilerId.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/3.24.1/CompilerIdC/a.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/CMakeOutput.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/TargetDirectories.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/clion-environment.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/cmake.check_cache" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/oschalge.dir/DependInfo.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/oschalge.dir/build.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/oschalge.dir/cmake_clean.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/oschalge.dir/compiler_depend.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/oschalge.dir/compiler_depend.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/oschalge.dir/depend.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/oschalge.dir/flags.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/oschalge.dir/link.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/oschalge.dir/progress.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/build.ninja" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/cmake_install.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/cmake-build-debug/oschalge.cbp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/hashfunc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/hashfunc.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/hashtable.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/hashtable.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/hashtable.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/messages.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/request.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/request.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/request.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/server" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/server.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oschalge/server.o" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$/oschalge">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MakefileLocalSettings">
+    <option name="availableProjects">
+      <map>
+        <entry>
+          <key>
+            <ExternalProjectPojo>
+              <option name="name" value="os-challenge-holycow" />
+              <option name="path" value="$PROJECT_DIR$/oschalge" />
+            </ExternalProjectPojo>
+          </key>
+          <value>
+            <list>
+              <ExternalProjectPojo>
+                <option name="name" value="os-challenge-holycow" />
+                <option name="path" value="$PROJECT_DIR$/oschalge" />
+              </ExternalProjectPojo>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="projectSyncType">
+      <map>
+        <entry key="$PROJECT_DIR$/oschalge" value="RE_IMPORT" />
+      </map>
+    </option>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectApplicationVersion">
+    <option name="ide" value="CLion" />
+    <option name="majorVersion" value="2022" />
+    <option name="minorVersion" value="1.3" />
+  </component>
+  <component name="ProjectId" id="2FZqNGx5jCfR23NdFNpT6cspUbg" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "last_opened_file_path": "D:/thiba/Music/os-challenge-common/os-challenge-holycow/oschalge",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\thiba\Music\os-challenge-common\os-challenge-holycow\oschalge" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Makefile Target.all">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="all" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="os-challenge-holycow" TARGET_NAME="all" CONFIG_NAME="all" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="bin" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="os-challenge-holycow" TARGET_NAME="bin" CONFIG_NAME="bin" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="obj" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="os-challenge-holycow" TARGET_NAME="obj" CONFIG_NAME="obj" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="all" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/oschalge/Makefile" target="all" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <configuration name="clean" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/oschalge/Makefile" target="clean" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Makefile Application.all" />
+      <item itemvalue="Makefile Application.bin" />
+      <item itemvalue="Makefile Application.obj" />
+      <item itemvalue="Makefile Target.clean" />
+      <item itemvalue="Makefile Target.all" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Makefile Target.all" />
+        <item itemvalue="Makefile Target.clean" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="cc5780fb-ed9d-4982-abc3-98bccfc8e66b" name="Changes" comment="" />
+      <created>1664709914246</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1664709914246</updated>
+      <workItem from="1664709918429" duration="3226000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
