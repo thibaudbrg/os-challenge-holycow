@@ -16,15 +16,9 @@
 
 #define REQUEST_PACKET_SIZE 49
 #define RESPONSE_PACKET_SIZE 8
+#define MAX_PENDING 3
 
 #define SA struct sockaddr
-
-int compare(const uint8_t *to_compare, const Request *request) {
-    if (memcmp(to_compare, request->hash, SIZE_HASH) == 0) {
-        return 1;
-    }
-    return 0;
-}
 
 uint8_t *hash(uint64_t *to_hash) {
     if (to_hash != NULL) {
@@ -32,6 +26,14 @@ uint8_t *hash(uint64_t *to_hash) {
         return hashed;
     }
     exit(EXIT_FAILURE);
+}
+
+
+int compare(const uint8_t *to_compare, const Request *request) {
+    if (memcmp(to_compare, request->hash, SIZE_HASH) == 0) {
+        return 1;
+    }
+    return 0;
 }
 
 
@@ -52,18 +54,14 @@ int compute(int connfd) {
     bzero(buff, REQUEST_PACKET_SIZE);
 
     // read the message from client and copy it in buffer
-    size_t length = read(connfd, buff, sizeof(buff));
-    if (length != REQUEST_PACKET_SIZE) {
-        fprintf(stderr, "ERROR: Unable to read %d elements, read only %zu elements.\n", REQUEST_PACKET_SIZE, length);
-        return -2;
-    }
+    size_t length = read(connfd, buff, REQUEST_PACKET_SIZE);
 
     Request *request = getRequest(buff, REQUEST_PACKET_SIZE);
     uint64_t answer = htobe64(decode(request));
 
     // Send answer to the client
-    size_t err = write(connfd, &answer, RESPONSE_PACKET_SIZE);
-    if (err == -1) {
+    size_t err = send(connfd, &answer, RESPONSE_PACKET_SIZE,0);
+    if (err != RESPONSE_PACKET_SIZE) {
         fprintf(stderr, "error writing");
         exit(EXIT_FAILURE);
     }
@@ -77,11 +75,8 @@ int compute(int connfd) {
 
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        fprintf(stderr, "Not enough argument, port number must be specified.\n");
-        exit(EXIT_FAILURE);
-    } else if (argc > 2) {
-        fprintf(stderr, "Too many arguments, only port number must be specified.\n");
+    if (argc != 2) {
+        fprintf(stderr, "Number of arguments is not correct.\n ");
         exit(EXIT_FAILURE);
     }
 
@@ -99,16 +94,16 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in servaddr;
     int addrlen = sizeof(servaddr);
 
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd == -1) {
+    //sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         fprintf(stderr, "socket creation failed...\n");
         exit(EXIT_FAILURE);
     } else {
         printf("Socket successfully created..\n");
     }
 
-    bzero(&servaddr, addrlen);
-
+    //bzero(&servaddr, addrlen);
+    memset(&servaddr,0, addrlen);
     // assign IP, PORT
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -125,7 +120,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Now server is ready to listen and verification
-    if ((listen(sockfd, 3)) < 0) {
+    if ((listen(sockfd, MAX_PENDING)) < 0) {
         fprintf(stderr, "Listen failed...\n");
         exit(EXIT_FAILURE);
     } else {
