@@ -54,7 +54,11 @@ int compute(int connfd) {
     bzero(buff, REQUEST_PACKET_SIZE);
 
     // read the message from client and copy it in buffer
-    size_t length = read(connfd, buff, REQUEST_PACKET_SIZE);
+    size_t length = read(connfd, buff, sizeof(buff));
+    if (length != REQUEST_PACKET_SIZE) {
+        fprintf(stderr, "ERROR: Unable to read %d elements, read only %zu elements.\n", REQUEST_PACKET_SIZE, length);
+        return -2;
+    }
 
     Request *request = getRequest(buff, REQUEST_PACKET_SIZE);
     uint64_t answer = htobe64(decode(request));
@@ -102,8 +106,6 @@ int main(int argc, char *argv[]) {
         printf("Socket successfully created..\n");
     }
 
-    //bzero(&servaddr, addrlen);
-    memset(&servaddr,0, addrlen);
     // assign IP, PORT
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -111,7 +113,7 @@ int main(int argc, char *argv[]) {
 
     // Binding newly created socket to given IP and verification
     int one = 1;
-    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &one, sizeof(one));
     if ((bind(sockfd, (SA *) &servaddr, addrlen)) < 0) {
         fprintf(stderr, "socket bind failed...\n");
         exit(EXIT_FAILURE);

@@ -1,0 +1,5 @@
+
+obj/server.o
+server
+*.o
+*.o
