@@ -16,9 +16,30 @@
 
 #define REQUEST_PACKET_SIZE 49
 #define RESPONSE_PACKET_SIZE 8
-#define MAX_PENDING 3
+#define MAX_PENDING 100
 
 #define SA struct sockaddr
+
+void print_SHA(const unsigned char *SHA) {
+    if (SHA == NULL) { // Safety protection
+        return;
+    }
+    for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+        printf("%02x", SHA[i]);
+    }
+    putchar('\n');
+}
+
+
+
+
+int compare(const uint8_t *to_compare, const Request *request) {
+    if (memcmp(to_compare, request->hash, SIZE_HASH) == 0) {
+        print_SHA(to_compare);
+        return 1;
+    }
+    return 0;
+}
 
 uint8_t *hash(uint64_t *to_hash) {
     if (to_hash != NULL) {
@@ -28,21 +49,13 @@ uint8_t *hash(uint64_t *to_hash) {
     exit(EXIT_FAILURE);
 }
 
-
-int compare(const uint8_t *to_compare, const Request *request) {
-    if (memcmp(to_compare, request->hash, SIZE_HASH) == 0) {
-        return 1;
-    }
-    return 0;
-}
-
-
 uint64_t decode(const Request *request) {
     if (request != NULL) {
         uint64_t i = request->start;
         while (compare(hash(&i), request) != 1 && i < request->end) {
             ++i;
         }
+        printf("Decoded: %" PRIu64 "\n", i);
         return i;
     }
     exit(EXIT_FAILURE);
@@ -64,7 +77,7 @@ int compute(int connfd) {
     uint64_t answer = htobe64(decode(request));
 
     // Send answer to the client
-    size_t err = send(connfd, &answer, RESPONSE_PACKET_SIZE,0);
+    size_t err = send(connfd, &answer, RESPONSE_PACKET_SIZE, 0);
     if (err != RESPONSE_PACKET_SIZE) {
         fprintf(stderr, "error writing");
         exit(EXIT_FAILURE);
@@ -136,7 +149,7 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "server accept failed...\n");
             exit(EXIT_FAILURE);
         } else {
-            printf("server accept the client...\n");
+            //printf("server accept the client...\n");
             // Function for chatting between client and server
             int err_chat = compute(connfd);
             if (err_chat != 0) {

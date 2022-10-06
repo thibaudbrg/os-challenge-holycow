@@ -3,3 +3,4 @@ obj/server.o
 server
 *.o
 *.o
+server

@@ -13,7 +13,7 @@ Request *create_empty_request(void) {
         output->p = 0;
         output->start = 0;
         output->end = 0;
-        printf("Request created successfully!\n");
+        // printf("Request created successfully!\n");
         return output;
 
     }
@@ -25,7 +25,6 @@ Request *getRequest(const unsigned char *all_bytes, size_t length) {
         Request *output = create_empty_request();
 
         output->hash = all_bytes;
-
         uint64_t *start = all_bytes + PACKET_REQUEST_START_OFFSET;
         output->start = htobe64(*start);
 
