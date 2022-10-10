@@ -13,13 +13,27 @@
 
 #include "messages.h"
 #include "request.h"
+#include "queue.h"
 
 #define SOCKET_ERROR (-1)
 #define REQUEST_PACKET_SIZE 49
 #define RESPONSE_PACKET_SIZE 8
 #define SERVER_BACKLOG 3
-
+#define THREAD_POOL_SIZE 20
 #define SA struct sockaddr
+#define SA_IN struct sockaddr_in
+
+pthread_t thread_pool[THREAD_POOL_SIZE];
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER; // Threads wait until something happens and then wake up
+
+void print_SHA(const unsigned char *SHA);
+int compare(const uint8_t *to_compare, const Request *request);
+uint8_t *hash(uint64_t *to_hash);
+uint64_t decode(const Request *request);
+int check(int exp, const char *msg);
+void *compute(void *p_connfd);
+void * thread_function(void *arg);
 
 void print_SHA(const unsigned char *SHA) {
     if (SHA != NULL) {
@@ -77,6 +91,7 @@ int check(int exp, const char *msg) {
 void *compute(void *p_connfd) {
     int connfd = *((int *) p_connfd);
     free(p_connfd); // We don't need it anymore
+    p_connfd = NULL;
 
     unsigned char buff[REQUEST_PACKET_SIZE];
 
@@ -108,6 +123,23 @@ void *compute(void *p_connfd) {
     return NULL;
 }
 
+void * thread_function(void *arg) {
+    // Infinite loop because we never want these threads to die
+    while (1) {
+        int *pclient;
+        pthread_mutex_lock(&mutex);
+        if((pclient = dequeue()) == NULL) { // Don't wait if the queue is non-empty
+            pthread_cond_wait(&condition_var, &mutex); // Wait until it signals and releases the lock
+            // Try again to dequeue in case the queue is not empty anymore
+            pclient = dequeue();
+        }
+        pthread_mutex_unlock(&mutex);
+        if (pclient != NULL) {
+            // We have a connection
+            compute(pclient);
+        }
+    }
+}
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -126,8 +158,13 @@ int main(int argc, char *argv[]) {
 
     // Socket creation
     int sockfd, connfd;
-    struct sockaddr_in servaddr;
+    SA_IN servaddr;
     int addrlen = sizeof(servaddr);
+
+    // First off, create a bunch of threads to handle future connections
+    for (int i = 0; i < THREAD_POOL_SIZE; ++i) {
+        pthread_create(&thread_pool[i], NULL, thread_function, NULL);
+    }
 
     check((sockfd = socket(AF_INET, SOCK_STREAM, 0)), "Socket creation failed...");
     printf("Socket successfully created.\n");
@@ -153,11 +190,16 @@ int main(int argc, char *argv[]) {
         check(connfd = accept(sockfd, (SA *) (struct sockaddr *) &servaddr, (socklen_t *) &addrlen),
               "Server accept failed...");
         // printf("Connected to client.\n");
-        // Create a new pointer foreach thread to not mess with several threads
-        pthread_t t;
+
         int *p_connfd = malloc(sizeof(int));
         *p_connfd = connfd;
-        pthread_create(&t, NULL, compute, p_connfd);
+
+        // Make sure only one thread messes with the queue at a time (evict race condition)
+        // Thread-safe implementation -- Same as been done during dequeue
+        pthread_mutex_lock(&mutex);
+        enqueue(p_connfd);
+        pthread_cond_signal(&condition_var); // Wake up the thread
+        pthread_mutex_unlock(&mutex);
     }
 
     shutdown(sockfd, SHUT_RDWR);

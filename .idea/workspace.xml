@@ -11,6 +11,7 @@
   </component>
   <component name="CMakeRunConfigurationManager">
     <generated>
+      <config projectName="os-challenge-holycow" targetName="Makefile" />
       <config projectName="os-challenge-holycow" targetName="all" />
       <config projectName="os-challenge-holycow" targetName="bin" />
       <config projectName="os-challenge-holycow" targetName="obj" />
@@ -23,17 +24,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cc5780fb-ed9d-4982-abc3-98bccfc8e66b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/os-challenge-holycow.iml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/include/queue.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/queue.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/server" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/hashtable.d" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/hashtable.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/request.o" beforeDir="false" afterPath="$PROJECT_DIR$/obj/request.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/server.d" beforeDir="false" afterPath="$PROJECT_DIR$/obj/server.d" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/server.o" beforeDir="false" afterPath="$PROJECT_DIR$/obj/server.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server" beforeDir="false" afterPath="$PROJECT_DIR$/server" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/request.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/request.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/server.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/server.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -62,6 +59,14 @@
       <filtered-out-file-type name="TAG" />
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
+  </component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="03fdc035-bcb6-4575-b86f-6fe5a12cc6f4" />
+        <option name="url" value="git@github.com:thibaudbrg/os-challenge-holycow.git" />
+      </UrlAndAccount>
+    </option>
   </component>
   <component name="MakefileLocalSettings">
     <option name="availableProjects">
@@ -130,6 +135,11 @@
         <option name="CLION.EXTERNAL.BUILD" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Makefile" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="os-challenge-holycow" TARGET_NAME="Makefile" CONFIG_NAME="Makefile" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="all" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="os-challenge-holycow" TARGET_NAME="all" CONFIG_NAME="all" version="1">
       <method v="2">
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
@@ -178,6 +188,7 @@
     <list>
       <item itemvalue="Makefile Application.all" />
       <item itemvalue="Makefile Application.bin" />
+      <item itemvalue="Makefile Application.Makefile" />
       <item itemvalue="Makefile Application.obj" />
       <item itemvalue="Makefile Target.Makefile" />
       <item itemvalue="Makefile Target.all (1)" />
