@@ -15,7 +15,6 @@ Request *create_empty_request(void) {
         output->end = 0;
         // printf("Request created successfully!\n");
         return output;
-
     }
     return NULL;
 }
@@ -24,17 +23,17 @@ Request *getRequest(const unsigned char *all_bytes, size_t length) {
     if (all_bytes != NULL) {
         Request *output = create_empty_request();
 
-        output->hash = all_bytes;
-        uint64_t *start = all_bytes + PACKET_REQUEST_START_OFFSET;
+        output->hash = (uint8_t *) all_bytes;
+
+        uint64_t *start = (uint64_t *) (all_bytes + PACKET_REQUEST_START_OFFSET);
         output->start = htobe64(*start);
 
-        uint64_t *end = all_bytes + PACKET_REQUEST_END_OFFSET;
+        uint64_t *end = (uint64_t *) (all_bytes + PACKET_REQUEST_END_OFFSET);
         output->end = htobe64(*end);
 
-        output->p = all_bytes + PACKET_REQUEST_PRIO_OFFSET;
+        output->p = ((uint8_t *) (all_bytes + PACKET_REQUEST_PRIO_OFFSET))[0];
 
         return output;
-    } else {
-        return NULL;
     }
+    return NULL;
 }

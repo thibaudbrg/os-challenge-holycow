@@ -5,40 +5,42 @@
 #include <limits.h>
 #include <string.h>
 
-#include <netdb.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include "messages.h"
 #include "request.h"
 
+#define SOCKET_ERROR (-1)
 #define REQUEST_PACKET_SIZE 49
 #define RESPONSE_PACKET_SIZE 8
-#define MAX_PENDING 100
+#define SERVER_BACKLOG 3
 
 #define SA struct sockaddr
 
 void print_SHA(const unsigned char *SHA) {
-    if (SHA == NULL) { // Safety protection
-        return;
+    if (SHA != NULL) {
+        for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+            printf("%02x", SHA[i]);
+        }
+        putchar('\n');
     }
-    for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
-        printf("%02x", SHA[i]);
-    }
-    putchar('\n');
 }
 
-
-
-
 int compare(const uint8_t *to_compare, const Request *request) {
-    if (memcmp(to_compare, request->hash, SIZE_HASH) == 0) {
-        print_SHA(to_compare);
-        return 1;
+    if (to_compare != NULL && request != NULL) {
+        if (memcmp(to_compare, request->hash, SIZE_HASH) == 0) {
+            print_SHA(to_compare);
+            return 1;
+        }
+        return 0;
     }
-    return 0;
+    perror("ERROR: Pointers \"to_compare\" and/or \"request\" is/are NULL: ");
+    exit(EXIT_FAILURE);
+
 }
 
 uint8_t *hash(uint64_t *to_hash) {
@@ -46,6 +48,7 @@ uint8_t *hash(uint64_t *to_hash) {
         uint8_t *hashed = SHA256((unsigned char *) to_hash, 8, NULL);
         return hashed;
     }
+    perror("ERROR: Pointer \"to_hash\" is NULL: ");
     exit(EXIT_FAILURE);
 }
 
@@ -58,19 +61,31 @@ uint64_t decode(const Request *request) {
         printf("Decoded: %" PRIu64 "\n", i);
         return i;
     }
+    perror("ERROR: Pointer \"request\" is NULL: ");
     exit(EXIT_FAILURE);
 }
 
+int check(int exp, const char *msg) {
+    if (exp == SOCKET_ERROR) {
+        perror(msg);
+        exit(1);
+    }
+    return exp;
+}
 
-int compute(int connfd) {
+// compute now takes a pointer and return a pointer
+void *compute(void *p_connfd) {
+    int connfd = *((int *) p_connfd);
+    free(p_connfd); // We don't need it anymore
+
     unsigned char buff[REQUEST_PACKET_SIZE];
-    bzero(buff, REQUEST_PACKET_SIZE);
 
     // read the message from client and copy it in buffer
     size_t length = read(connfd, buff, sizeof(buff));
     if (length != REQUEST_PACKET_SIZE) {
-        fprintf(stderr, "ERROR: Unable to read %d elements, read only %zu elements.\n", REQUEST_PACKET_SIZE, length);
-        return -2;
+        fprintf(stderr, "ERROR: Unable to read %d elements, read only %zu elements: ", REQUEST_PACKET_SIZE, length);
+        perror(NULL);
+        return NULL;
     }
 
     Request *request = getRequest(buff, REQUEST_PACKET_SIZE);
@@ -79,15 +94,18 @@ int compute(int connfd) {
     // Send answer to the client
     size_t err = send(connfd, &answer, RESPONSE_PACKET_SIZE, 0);
     if (err != RESPONSE_PACKET_SIZE) {
-        fprintf(stderr, "error writing");
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "ERROR: Failed to send: ");
+        perror(NULL);
+        return NULL;
     }
 
     // We free the request
     free(request);
     request = NULL;
 
-    return 0;
+    close(connfd);
+    //printf("Closing connection.\n");
+    return NULL;
 }
 
 
@@ -106,59 +124,45 @@ int main(int argc, char *argv[]) {
     }
     int port = tmp;
 
-    // socket create and verification
+    // Socket creation
     int sockfd, connfd;
     struct sockaddr_in servaddr;
     int addrlen = sizeof(servaddr);
 
-    //sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        fprintf(stderr, "socket creation failed...\n");
-        exit(EXIT_FAILURE);
-    } else {
-        printf("Socket successfully created..\n");
-    }
+    check((sockfd = socket(AF_INET, SOCK_STREAM, 0)), "Socket creation failed...");
+    printf("Socket successfully created.\n");
 
     // assign IP, PORT
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port = htons(port);
 
-    // Binding newly created socket to given IP and verification
     int one = 1;
     setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &one, sizeof(one));
-    if ((bind(sockfd, (SA *) &servaddr, addrlen)) < 0) {
-        fprintf(stderr, "socket bind failed...\n");
-        exit(EXIT_FAILURE);
-    } else {
-        printf("Socket successfully binded..\n");
-    }
 
-    // Now server is ready to listen and verification
-    if ((listen(sockfd, MAX_PENDING)) < 0) {
-        fprintf(stderr, "Listen failed...\n");
-        exit(EXIT_FAILURE);
-    } else {
-        printf("Server listening..\n");
-    }
+    // Binding newly created socket to given IP
+    check(bind(sockfd, (SA *) &servaddr, addrlen), "Socket bind failed...");
+    printf("Socket binded successfully.\n");
+
+    // Now server is ready to listen
+    check(listen(sockfd, SERVER_BACKLOG), "Listening failed...");
+    printf("Server listening.\n");
 
     while (1) {
-        // Accept the data packet from client and verification
-        connfd = accept(sockfd, (SA *) (struct sockaddr *) &servaddr, (socklen_t *) &addrlen);
-        if (connfd < 0) {
-            fprintf(stderr, "server accept failed...\n");
-            exit(EXIT_FAILURE);
-        } else {
-            //printf("server accept the client...\n");
-            // Function for chatting between client and server
-            int err_chat = compute(connfd);
-            if (err_chat != 0) {
-                fprintf(stderr, "Program interrupted by an error of number: %d\n", err_chat);
-                exit(EXIT_FAILURE);
-            }
-        }
+        // Accept the data packet from client
+        check(connfd = accept(sockfd, (SA *) (struct sockaddr *) &servaddr, (socklen_t *) &addrlen),
+              "Server accept failed...");
+        // printf("Connected to client.\n");
+        // Create a new pointer foreach thread to not mess with several threads
+        pthread_t t;
+        int *p_connfd = malloc(sizeof(int));
+        *p_connfd = connfd;
+        pthread_create(&t, NULL, compute, p_connfd);
     }
-    close(connfd);
+
     shutdown(sockfd, SHUT_RDWR);
     return 0;
 }
+
+
+
