@@ -28,12 +28,18 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER; // Threads wait until something happens and then wake up
 
 void print_SHA(const unsigned char *SHA);
+
 int compare(const uint8_t *to_compare, const Request *request);
+
 uint8_t *hash(uint64_t *to_hash);
+
 uint64_t decode(const Request *request);
+
 int check(int exp, const char *msg);
+
 void *compute(void *p_connfd);
-void * thread_function(void *arg);
+
+void *thread_function(void *arg);
 
 void print_SHA(const unsigned char *SHA) {
     if (SHA != NULL) {
@@ -123,12 +129,12 @@ void *compute(void *p_connfd) {
     return NULL;
 }
 
-void * thread_function(void *arg) {
+void *thread_function(void *arg) {
     // Infinite loop because we never want these threads to die
     while (1) {
         int *pclient;
         pthread_mutex_lock(&mutex);
-        if((pclient = dequeue()) == NULL) { // Don't wait if the queue is non-empty
+        if ((pclient = dequeue()) == NULL) { // Don't wait if the queue is non-empty
             pthread_cond_wait(&condition_var, &mutex); // Wait until it signals and releases the lock
             // Try again to dequeue in case the queue is not empty anymore
             pclient = dequeue();
@@ -194,6 +200,7 @@ int main(int argc, char *argv[]) {
         int *p_connfd = malloc(sizeof(int));
         *p_connfd = connfd;
 
+        // We create a linked list (queue) to put the connection somewhere so that an available thread can find it
         // Make sure only one thread messes with the queue at a time (evict race condition)
         // Thread-safe implementation -- Same as been done during dequeue
         pthread_mutex_lock(&mutex);
