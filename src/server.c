@@ -208,9 +208,6 @@ int main(int argc, char *argv[]) {
         pthread_cond_signal(&condition_var); // Wake up the thread
         pthread_mutex_unlock(&mutex);
     }
-
-    shutdown(sockfd, SHUT_RDWR);
-    return 0;
 }
 
 
