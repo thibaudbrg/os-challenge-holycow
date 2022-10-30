@@ -4,8 +4,6 @@
 extern "C" {
 #endif
 
-#define SIZE_HASH 32
-
 typedef struct {
     uint8_t *hash;
     u_int64_t start;
@@ -17,7 +15,7 @@ Request *create_empty_request(void);
 
 void destroy_request(Request *request);
 
-Request *getRequest(const unsigned char *all_bytes, size_t length);
+Request *getRequest(int connfd);
 
 #ifdef __cplusplus
 }

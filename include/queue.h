@@ -9,7 +9,7 @@ typedef struct node {
     struct node *next;
 } node_t;
 
-void enqueue(int *client_socket);
+void enqueue(int *connfd);
 
 int *dequeue(void);
 

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <unistd.h>
 
 #include "request.h" // Include itself for more security
 #include "messages.h"
@@ -19,21 +20,37 @@ Request *create_empty_request(void) {
     return NULL;
 }
 
-Request *getRequest(const unsigned char *all_bytes, size_t length) {
-    if (all_bytes != NULL) {
-        Request *output = create_empty_request();
+// getRequest now takes a pointer and return a pointer
+Request *getRequest(int connfd) {
 
-        output->hash = (uint8_t *) all_bytes;
+    unsigned char buff[PACKET_REQUEST_SIZE];
 
-        uint64_t *start = (uint64_t *) (all_bytes + PACKET_REQUEST_START_OFFSET);
-        output->start = htobe64(*start);
-
-        uint64_t *end = (uint64_t *) (all_bytes + PACKET_REQUEST_END_OFFSET);
-        output->end = htobe64(*end);
-
-        output->p = ((uint8_t *) (all_bytes + PACKET_REQUEST_PRIO_OFFSET))[0];
-
-        return output;
+    // read the message from client and copy it in buffer
+    size_t length = read(connfd, buff, sizeof(buff));
+    if (length != PACKET_REQUEST_SIZE) {
+        fprintf(stderr, "ERROR: Unable to read %d elements, read only %zu elements: ", PACKET_REQUEST_SIZE,
+                length);
+        perror(NULL);
+        return NULL;
     }
-    return NULL;
+
+    Request *request = create_empty_request();
+
+    request->hash = (uint8_t *) buff;
+
+    uint64_t *start = (uint64_t *) (buff + PACKET_REQUEST_START_OFFSET);
+    request->start = htobe64(*start);
+
+    uint64_t *end = (uint64_t *) (buff + PACKET_REQUEST_END_OFFSET);
+    request->end = htobe64(*end);
+
+    request->p = ((uint8_t *) (buff + PACKET_REQUEST_PRIO_OFFSET))[0];
+
+    return request;
+}
+
+void destroy_request(Request *request) {
+    if (request != NULL) {
+        request->hash = NULL;
+    }
 }
