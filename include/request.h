@@ -15,7 +15,7 @@ Request *create_empty_request(void);
 
 void destroy_request(Request *request);
 
-Request *getRequest(int connfd);
+Request *getRequest(int * p_connfd);
 
 #ifdef __cplusplus
 }

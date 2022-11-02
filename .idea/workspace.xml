@@ -24,14 +24,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cc5780fb-ed9d-4982-abc3-98bccfc8e66b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/priorityqueue.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/priorityqueue.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/queue.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/queue.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/request.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/request.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/queue.d" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/request.d" beforeDir="false" afterPath="$PROJECT_DIR$/obj/request.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/priorityqueue.d" beforeDir="false" afterPath="$PROJECT_DIR$/obj/priorityqueue.d" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/request.o" beforeDir="false" afterPath="$PROJECT_DIR$/obj/request.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/server.d" beforeDir="false" afterPath="$PROJECT_DIR$/obj/server.d" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/server.o" beforeDir="false" afterPath="$PROJECT_DIR$/obj/server.o" afterDir="false" />
@@ -226,6 +223,9 @@
       <workItem from="1665390017329" duration="8170000" />
       <workItem from="1665423788284" duration="758000" />
       <workItem from="1667127869850" duration="2046000" />
+      <workItem from="1667226290492" duration="79000" />
+      <workItem from="1667226591420" duration="4000" />
+      <workItem from="1667412430127" duration="10559000" />
     </task>
     <servers />
   </component>

@@ -42,16 +42,16 @@ void *thread_function(void *arg);
 void print_SHA(const unsigned char *SHA) {
     if (SHA != NULL) {
         for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
-            printf("%02x", SHA[i]);
+            fprintf(stderr, "%02x", SHA[i]);
         }
-        putchar('\n');
+        //putchar('\n');
     }
 }
 
 int compare(const uint8_t *to_compare, const Request *request) {
     if (to_compare != NULL && request != NULL) {
         if (memcmp(to_compare, request->hash, SHA_DIGEST_LENGTH) == 0) {
-            print_SHA(to_compare);
+            //print_SHA(to_compare);
             return 1;
         }
         return 0;
@@ -75,7 +75,7 @@ uint64_t decode(const Request *request) {
         while (compare(hash(&i), request) != 1 && i < request->end) {
             ++i;
         }
-        printf("Decoded: %" PRIu64 "\n", i);
+        //fprintf(stderr, "Decoded: %" PRIu64 "\n", i);
         return i;
     }
     perror("ERROR: Pointer \"request\" is NULL: ");
@@ -107,9 +107,12 @@ void *thread_function(void *arg) {
     // Infinite loop because we never want these threads to die
     while (1) {
         node_t *work = NULL;
-        sleep(3);
+        sleep(10);
         pthread_mutex_lock(&mutex);
-        if ((work = dequeue()) == NULL) { // Don't wait if the queue is non-empty
+        work = dequeue();
+        //fflush(stdout);
+        //printf("J4AI DEQUEUE");
+        if (work == NULL) { // Don't wait if the queue is non-empty
             pthread_cond_wait(&condition_var, &mutex); // Wait until it signals and releases the lock
             // Try again to dequeue in case the queue is not empty anymore
             work = dequeue();
@@ -117,10 +120,11 @@ void *thread_function(void *arg) {
         pthread_mutex_unlock(&mutex);
         if (work != NULL) {
             // We have a connection
+            //print_SHA(work->request->hash);
             compute_SHA(work);
             // We free the connfd and the corresponding request
-            destroy_node(work);
-            free(work);
+            //destroy_node(work);
+            //free(work);
             work = NULL;
         }
     }
@@ -178,6 +182,8 @@ int main(int argc, char *argv[]) {
 
         int *p_connfd = malloc(sizeof(int));
         *p_connfd = connfd;
+
+
 
         // We create a linked list (queue) to put the connection somewhere so that an available thread can find it
         // Make sure only one thread messes with the queue at a time (evict race condition)

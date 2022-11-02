@@ -13,21 +13,19 @@ node_t *tail = NULL;
 void print_SHA2(const unsigned char *SHA) {
     if (SHA != NULL) {
         for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
-            printf("%02x", SHA[i]);
+            printf( "%02x", SHA[i]);
         }
-        putchar('\n');
+        //putchar('\n');
     }
 }
 
-void enqueue(int *connfd) {
+void enqueue(int *p_connfd) {
     node_t *newnode = malloc(sizeof(node_t));
-    newnode->connfd = connfd;
+    newnode->connfd = p_connfd;
     newnode->next = NULL;
-
-    newnode->request = getRequest(*connfd);
-
-    //print_SHA2(newnode->request->hash);
-    //print_SHA2(newnode->request->hash);
+    newnode->request = getRequest(p_connfd);
+    // printf("in enqueue hash:");
+    // print_SHA2(newnode->request->hash);
 
     // Special case: head has less priority than newNode
     // so place it in front and change the head
@@ -44,7 +42,8 @@ void enqueue(int *connfd) {
         newnode->next = start->next;
         start->next = newnode;
     }
-
+    //printf("THe head:");
+    //print_SHA2(head->request->hash);
     print_queue();
 }
 
@@ -52,9 +51,12 @@ void enqueue(int *connfd) {
 // Returns the pointer to the connfd with the highest priority, if there is one to get
 node_t *dequeue(void) {
     if (head != NULL) {
+        // fflush(stdout);
+        // print_SHA2(head->request->hash);
+        // printf("||||||||||||||||||||");
         node_t *result = head;
         head = head->next;
-        print_queue();
+        //print_queue();
         return result;
     }
     return NULL;
@@ -75,18 +77,18 @@ void destroy_node(node_t *node) {
 
 void print_queue(void) {
     if (head == NULL) {
-        printf("The queue is empty\n");
+        printf("The queue is empty");
     } else {
         int pos = 0; // head == 0;
-        printf("i'm here\n");
         node_t *start = head;
-        printf("                                       //=========HEAD=========\\\\\n");
+        fflush(stdout);
+        printf("                                       //=========HEAD=========\\\\");
         while (start->next != NULL) {
             printf("%3d --> prior: %2" PRIu8 " connfd: %3d  ||||  hash: ", pos, start->request->p, *start->connfd);
             print_SHA2(start->request->hash);
             start = start->next;
             ++pos;
         }
-        printf("                                       //=========TAIL=========\\\\\n");
+        printf("                                       //=========TAIL=========\\\\");
     }
 }
