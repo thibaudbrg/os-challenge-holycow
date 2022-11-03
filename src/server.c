@@ -8,18 +8,16 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <pthread.h>
+#include <unistd.h>
 
 #include "messages.h"
 #include "request.h"
-#include "queue.h"
+#include "priorityqueue.h"
 
 #define SOCKET_ERROR (-1)
-#define REQUEST_PACKET_SIZE 49
-#define RESPONSE_PACKET_SIZE 8
-#define SERVER_BACKLOG 3
-#define THREAD_POOL_SIZE 20
+#define SERVER_BACKLOG 25
+#define THREAD_POOL_SIZE 25
 #define SA struct sockaddr
 #define SA_IN struct sockaddr_in
 
@@ -37,14 +35,14 @@ uint64_t decode(const Request *request);
 
 int check(int exp, const char *msg);
 
-void *compute(void *p_connfd);
+void *compute_SHA(node_t *work);
 
 void *thread_function(void *arg);
 
 void print_SHA(const unsigned char *SHA) {
     if (SHA != NULL) {
         for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
-            printf("%02x", SHA[i]);
+            fprintf(stderr, "%02x", SHA[i]);
         }
         putchar('\n');
     }
@@ -52,7 +50,7 @@ void print_SHA(const unsigned char *SHA) {
 
 int compare(const uint8_t *to_compare, const Request *request) {
     if (to_compare != NULL && request != NULL) {
-        if (memcmp(to_compare, request->hash, SIZE_HASH) == 0) {
+        if (memcmp(to_compare, request->hash, SHA_DIGEST_LENGTH) == 0) {
             print_SHA(to_compare);
             return 1;
         }
@@ -60,7 +58,6 @@ int compare(const uint8_t *to_compare, const Request *request) {
     }
     perror("ERROR: Pointers \"to_compare\" and/or \"request\" is/are NULL: ");
     exit(EXIT_FAILURE);
-
 }
 
 uint8_t *hash(uint64_t *to_hash) {
@@ -94,55 +91,42 @@ int check(int exp, const char *msg) {
 }
 
 // compute now takes a pointer and return a pointer
-void *compute(void *p_connfd) {
-    int connfd = *((int *) p_connfd);
-    free(p_connfd); // We don't need it anymore
-    p_connfd = NULL;
-
-    unsigned char buff[REQUEST_PACKET_SIZE];
-
-    // read the message from client and copy it in buffer
-    size_t length = read(connfd, buff, sizeof(buff));
-    if (length != REQUEST_PACKET_SIZE) {
-        fprintf(stderr, "ERROR: Unable to read %d elements, read only %zu elements: ", REQUEST_PACKET_SIZE, length);
-        perror(NULL);
-        return NULL;
-    }
-
-    Request *request = getRequest(buff, REQUEST_PACKET_SIZE);
-    uint64_t answer = htobe64(decode(request));
-
+void *compute_SHA(node_t *work) {
+    uint64_t answer = htobe64(decode(work->request));
     // Send answer to the client
-    size_t err = send(connfd, &answer, RESPONSE_PACKET_SIZE, 0);
-    if (err != RESPONSE_PACKET_SIZE) {
-        fprintf(stderr, "ERROR: Failed to send: ");
+    size_t err = send(*work->connfd, &answer, PACKET_RESPONSE_SIZE, 0);
+    if (err != PACKET_RESPONSE_SIZE) {
+        fprintf(stderr, "ERROR: Failed to send (err = %zu) instead of %d: ", err, PACKET_RESPONSE_SIZE);
         perror(NULL);
         return NULL;
     }
-
-    // We free the request
-    free(request);
-    request = NULL;
-
-    close(connfd);
-    //printf("Closing connection.\n");
     return NULL;
 }
 
 void *thread_function(void *arg) {
     // Infinite loop because we never want these threads to die
     while (1) {
-        int *pclient;
+        Queue* queue= (Queue*) arg;
+        node_t *work = NULL;
         pthread_mutex_lock(&mutex);
-        if ((pclient = dequeue()) == NULL) { // Don't wait if the queue is non-empty
+        work = dequeue(queue);
+        //print_queue(queue);
+
+        //fflush(stdout);
+        if (work == NULL) { // Don't wait if the queue is non-empty
             pthread_cond_wait(&condition_var, &mutex); // Wait until it signals and releases the lock
             // Try again to dequeue in case the queue is not empty anymore
-            pclient = dequeue();
+            work = dequeue(queue);
         }
         pthread_mutex_unlock(&mutex);
-        if (pclient != NULL) {
+        if (work != NULL) {
             // We have a connection
-            compute(pclient);
+            //print_SHA(work->request->hash);
+            compute_SHA(work);
+            // We free the connfd and the corresponding request
+            //destroy_node(work);
+            //free(work);
+            //work = NULL;
         }
     }
 }
@@ -167,9 +151,11 @@ int main(int argc, char *argv[]) {
     SA_IN servaddr;
     int addrlen = sizeof(servaddr);
 
+    Queue*queue = createQueue();
+
     // First off, create a bunch of threads to handle future connections
     for (int i = 0; i < THREAD_POOL_SIZE; ++i) {
-        pthread_create(&thread_pool[i], NULL, thread_function, NULL);
+        pthread_create(&thread_pool[i], NULL, thread_function, queue);
     }
 
     check((sockfd = socket(AF_INET, SOCK_STREAM, 0)), "Socket creation failed...");
@@ -191,6 +177,7 @@ int main(int argc, char *argv[]) {
     check(listen(sockfd, SERVER_BACKLOG), "Listening failed...");
     printf("Server listening.\n");
 
+
     while (1) {
         // Accept the data packet from client
         check(connfd = accept(sockfd, (SA *) (struct sockaddr *) &servaddr, (socklen_t *) &addrlen),
@@ -200,11 +187,13 @@ int main(int argc, char *argv[]) {
         int *p_connfd = malloc(sizeof(int));
         *p_connfd = connfd;
 
+
+
         // We create a linked list (queue) to put the connection somewhere so that an available thread can find it
         // Make sure only one thread messes with the queue at a time (evict race condition)
         // Thread-safe implementation -- Same as been done during dequeue
         pthread_mutex_lock(&mutex);
-        enqueue(p_connfd);
+        enqueue(p_connfd, queue);
         pthread_cond_signal(&condition_var); // Wake up the thread
         pthread_mutex_unlock(&mutex);
     }
