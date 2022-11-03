@@ -17,7 +17,7 @@
 
 #define SOCKET_ERROR (-1)
 #define SERVER_BACKLOG 25
-#define THREAD_POOL_SIZE 1
+#define THREAD_POOL_SIZE 25
 #define SA struct sockaddr
 #define SA_IN struct sockaddr_in
 
@@ -44,14 +44,14 @@ void print_SHA(const unsigned char *SHA) {
         for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
             fprintf(stderr, "%02x", SHA[i]);
         }
-        //putchar('\n');
+        putchar('\n');
     }
 }
 
 int compare(const uint8_t *to_compare, const Request *request) {
     if (to_compare != NULL && request != NULL) {
         if (memcmp(to_compare, request->hash, SHA_DIGEST_LENGTH) == 0) {
-            //print_SHA(to_compare);
+            print_SHA(to_compare);
             return 1;
         }
         return 0;
@@ -75,7 +75,7 @@ uint64_t decode(const Request *request) {
         while (compare(hash(&i), request) != 1 && i < request->end) {
             ++i;
         }
-        //fprintf(stderr, "Decoded: %" PRIu64 "\n", i);
+        printf("Decoded: %" PRIu64 "\n", i);
         return i;
     }
     perror("ERROR: Pointer \"request\" is NULL: ");
@@ -106,16 +106,17 @@ void *compute_SHA(node_t *work) {
 void *thread_function(void *arg) {
     // Infinite loop because we never want these threads to die
     while (1) {
+        Queue* queue= (Queue*) arg;
         node_t *work = NULL;
-        sleep(10);
         pthread_mutex_lock(&mutex);
-        work = dequeue();
+        work = dequeue(queue);
+        //print_queue(queue);
+
         //fflush(stdout);
-        //printf("J4AI DEQUEUE");
         if (work == NULL) { // Don't wait if the queue is non-empty
             pthread_cond_wait(&condition_var, &mutex); // Wait until it signals and releases the lock
             // Try again to dequeue in case the queue is not empty anymore
-            work = dequeue();
+            work = dequeue(queue);
         }
         pthread_mutex_unlock(&mutex);
         if (work != NULL) {
@@ -125,7 +126,7 @@ void *thread_function(void *arg) {
             // We free the connfd and the corresponding request
             //destroy_node(work);
             //free(work);
-            work = NULL;
+            //work = NULL;
         }
     }
 }
@@ -150,9 +151,11 @@ int main(int argc, char *argv[]) {
     SA_IN servaddr;
     int addrlen = sizeof(servaddr);
 
+    Queue*queue = createQueue();
+
     // First off, create a bunch of threads to handle future connections
     for (int i = 0; i < THREAD_POOL_SIZE; ++i) {
-        pthread_create(&thread_pool[i], NULL, thread_function, NULL);
+        pthread_create(&thread_pool[i], NULL, thread_function, queue);
     }
 
     check((sockfd = socket(AF_INET, SOCK_STREAM, 0)), "Socket creation failed...");
@@ -174,6 +177,7 @@ int main(int argc, char *argv[]) {
     check(listen(sockfd, SERVER_BACKLOG), "Listening failed...");
     printf("Server listening.\n");
 
+
     while (1) {
         // Accept the data packet from client
         check(connfd = accept(sockfd, (SA *) (struct sockaddr *) &servaddr, (socklen_t *) &addrlen),
@@ -189,7 +193,7 @@ int main(int argc, char *argv[]) {
         // Make sure only one thread messes with the queue at a time (evict race condition)
         // Thread-safe implementation -- Same as been done during dequeue
         pthread_mutex_lock(&mutex);
-        enqueue(p_connfd);
+        enqueue(p_connfd, queue);
         pthread_cond_signal(&condition_var); // Wake up the thread
         pthread_mutex_unlock(&mutex);
     }
