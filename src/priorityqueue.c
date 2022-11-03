@@ -5,36 +5,24 @@
 
 #include "priorityqueue.h" // Include itself for more security
 #include "request.h"
-#include "messages.h"
 
-
-
-void print_SHA2(const unsigned char *SHA) {
-    if (SHA != NULL) {
-        for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
-            fprintf(stdout, "%02x", SHA[i]);
-        }
-        printf("\n");
-    }
-}
-
-Queue * createQueue(void){
-    Queue * queue = malloc(sizeof(Queue));
+Queue *createQueue(void) {
+    Queue *queue = malloc(sizeof(Queue));
     queue->head = NULL;
     queue->size = 0;
     return queue;
 }
 
-node_t * createNode(int *p_connfd){
+node_t *createNode(int * p_connfd) {
     node_t *newnode = malloc(sizeof(node_t));
-    newnode->request=getRequest(p_connfd);
-    newnode->connfd=p_connfd;
+    newnode->request = getRequest(p_connfd);
+    newnode->connfd = p_connfd;
     newnode->next = NULL;
     return newnode;
 }
 
-void enqueue(int *p_connfd, Queue*queue) {
-    node_t * newnode = createNode(p_connfd);
+void enqueue(int *p_connfd, Queue *queue) {
+    node_t *newnode = createNode(p_connfd);
 
     // Special case: head has less priority than newNode
     // so place it in front and change the head
@@ -52,20 +40,17 @@ void enqueue(int *p_connfd, Queue*queue) {
         start->next = newnode;
     }
     ++queue->size;
+
+    //print_queue(queue);
 }
 
 // Returns NULL is the queue is empty
 // Returns the pointer to the connfd with the highest priority, if there is one to get
-node_t *dequeue(Queue* queue) {
-   // printf("im here");
+node_t *dequeue(Queue *queue) {
     if (queue->size != 0) {
-        // fflush(stdout);
-        // printf("||||||||||||||||||||");
         node_t *result = queue->head;
         queue->head = queue->head->next;
-        //print_queue();
         --queue->size;
-        //print_SHA2(result->request->hash);
         return result;
     }
     return NULL;
@@ -80,24 +65,23 @@ void destroy_node(node_t *node) {
         destroy_request(node->request);
         free(node->request);
         node->request = NULL;
-
     }
 }
 
-void print_queue(Queue* queue) {
+void print_queue(Queue const * const queue) {
     if (queue->size == 0) {
-        printf("The queue is empty");
+        printf("The queue is empty\n");
     } else {
         int pos = 0; // head == 0;
         node_t *start = queue->head;
-        //fflush(stdout);
-        printf("                                       //=========HEAD=========\\\\");
+        printf("                                       //=========HEAD=========\\\\\n");
         while (start->next != NULL) {
             printf("%3d --> prior: %2" PRIu8 " connfd: %3d  ||||  hash: ", pos, start->request->p, *start->connfd);
-            print_SHA2(start->request->hash);
+            print_SHA(start->request->hash);
             start = start->next;
             ++pos;
         }
-        printf("                                       //=========TAIL=========\\\\");
+        printf("                                       //=========TAIL=========\\\\\n");
+        putchar('\n');
     }
 }

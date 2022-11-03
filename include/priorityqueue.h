@@ -17,17 +17,17 @@ typedef struct {
     size_t size;
 } Queue;
 
-node_t * createNode(int *p_connfd);
+node_t *createNode(int * p_connfd);
 
-Queue* createQueue(void);
+Queue *createQueue(void);
 
-void enqueue(int *p_connfd, Queue* queue);
+void enqueue(int *p_connfd, Queue *queue);
 
-node_t *dequeue(Queue* queue);
+node_t *dequeue(Queue *queue);
 
 void destroy_node(node_t *node);
 
-void print_queue(Queue* queue);
+void print_queue(Queue const * const queue);
 
 #ifdef __cplusplus
 }

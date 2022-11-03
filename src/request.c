@@ -6,13 +6,12 @@
 #include "request.h" // Include itself for more security
 #include "messages.h"
 
-
-void print_SHA3(const unsigned char *SHA) {
+void print_SHA(unsigned const char *SHA) {
     if (SHA != NULL) {
         for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
             fprintf(stderr, "%02x", SHA[i]);
         }
-        //putchar('\n');
+        putchar('\n');
     }
 }
 
@@ -33,17 +32,13 @@ Request *create_empty_request(void) {
     return NULL;
 }
 
-// getRequest now takes a pointer and return a pointer
-Request *getRequest(int *p_connfd) {
-    //unsigned char buff[PACKET_REQUEST_SIZE];
-    unsigned char* buff = calloc(PACKET_REQUEST_SIZE, sizeof(char));
-    if (buff != NULL){
-        // read the message from client and copy it in buffer
+Request *getRequest(int const *p_connfd) {
+    unsigned char *buff = calloc(PACKET_REQUEST_SIZE, sizeof(char));
+    if (buff != NULL) {
         size_t length = read(*p_connfd, buff, PACKET_REQUEST_SIZE);
         if (length != PACKET_REQUEST_SIZE) {
-            fprintf(stderr, "ERROR: Unable to read %d elements, read only %zu elements: ", PACKET_REQUEST_SIZE,
+            fprintf(stderr, "ERROR getRequest(): Unable to read %d elements, read only %zu elements.\n", PACKET_REQUEST_SIZE,
                     length);
-            perror(NULL);
             return NULL;
         }
 
@@ -58,12 +53,11 @@ Request *getRequest(int *p_connfd) {
         request->end = htobe64(*end);
 
         request->p = ((uint8_t *) (buff + PACKET_REQUEST_PRIO_OFFSET))[0];
+
         return request;
 
     }
     return NULL;
-
-
 }
 
 void destroy_request(Request *request) {
