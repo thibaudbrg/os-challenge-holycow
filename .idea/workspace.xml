@@ -3,9 +3,9 @@
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
-  <component name="CMakePresetLoader"><![CDATA[{
-  "useNewFormat": true
-}]]></component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
   <component name="CMakeReloadState">
     <option name="reloaded" value="true" />
   </component>
@@ -23,19 +23,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cc5780fb-ed9d-4982-abc3-98bccfc8e66b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/include/decoder.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/decoder.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/priorityqueue.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/priorityqueue.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/request.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/request.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/priorityqueue.d" beforeDir="false" afterPath="$PROJECT_DIR$/obj/priorityqueue.d" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/request.o" beforeDir="false" afterPath="$PROJECT_DIR$/obj/request.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/server.d" beforeDir="false" afterPath="$PROJECT_DIR$/obj/server.d" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/server.o" beforeDir="false" afterPath="$PROJECT_DIR$/obj/server.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server" beforeDir="false" afterPath="$PROJECT_DIR$/server" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/priorityqueue.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/priorityqueue.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/request.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/request.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/server.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/server.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,19 +105,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\thiba\Music\os-challenge-common\os-challenge-holycow\include" />
@@ -136,11 +126,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Makefile Target.all (1)">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="all" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="os-challenge-holycow" TARGET_NAME="all" CONFIG_NAME="all" version="1">
       <method v="2">
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
@@ -223,7 +208,11 @@
       <workItem from="1667226591420" duration="4000" />
       <workItem from="1667412430127" duration="10559000" />
       <workItem from="1667496919802" duration="3030000" />
-      <workItem from="1667505617490" duration="8986000" />
+      <workItem from="1667505617490" duration="9535000" />
+      <workItem from="1667553099792" duration="761000" />
+      <workItem from="1667555177897" duration="72000" />
+      <workItem from="1667555265618" duration="239000" />
+      <workItem from="1667555522112" duration="207000" />
     </task>
     <servers />
   </component>
