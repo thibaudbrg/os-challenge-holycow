@@ -2,7 +2,3 @@ server
 *.o
 .idea/workspace.xml
 .idea/workspace.xml
-.idea/workspace.xml
-*.xml
-server
-*.xml
