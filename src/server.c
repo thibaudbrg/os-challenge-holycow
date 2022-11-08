@@ -52,7 +52,7 @@ void print_SHA(const unsigned char *SHA) {
 
 int compare(const uint8_t *to_compare, const Request *request) {
     if (to_compare != NULL && request != NULL) {
-        if (memcmp(to_compare, request->hash, SIZE_HASH) == 0) {
+        if (memcmp(to_compare, request->hash, SHA256_DIGEST_LENGTH) == 0) {
             // print_SHA(to_compare);
             return 1;
         }
