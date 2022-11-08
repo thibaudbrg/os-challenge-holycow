@@ -18,8 +18,8 @@
 #define SOCKET_ERROR (-1)
 #define REQUEST_PACKET_SIZE 49
 #define RESPONSE_PACKET_SIZE 8
-#define SERVER_BACKLOG 3
-#define THREAD_POOL_SIZE 20
+#define SERVER_BACKLOG 1024
+#define THREAD_POOL_SIZE 4
 #define SA struct sockaddr
 #define SA_IN struct sockaddr_in
 
@@ -53,7 +53,7 @@ void print_SHA(const unsigned char *SHA) {
 int compare(const uint8_t *to_compare, const Request *request) {
     if (to_compare != NULL && request != NULL) {
         if (memcmp(to_compare, request->hash, SIZE_HASH) == 0) {
-            print_SHA(to_compare);
+            // print_SHA(to_compare);
             return 1;
         }
         return 0;
@@ -78,7 +78,7 @@ uint64_t decode(const Request *request) {
         while (compare(hash(&i), request) != 1 && i < request->end) {
             ++i;
         }
-        printf("Decoded: %" PRIu64 "\n", i);
+        // printf("Decoded: %" PRIu64 "\n", i);
         return i;
     }
     perror("ERROR: Pointer \"request\" is NULL: ");
