@@ -14,8 +14,8 @@
 #include "priorityqueue.h"
 
 #define SOCKET_ERROR (-1)
-#define SERVER_BACKLOG 1000
-#define THREAD_POOL_SIZE 8
+#define SERVER_BACKLOG 1024
+#define THREAD_POOL_SIZE 4
 #define SA struct sockaddr
 #define SA_IN struct sockaddr_in
 
@@ -31,8 +31,7 @@ int check(int exp, char const *msg) {
     return exp;
 }
 
-// compute now takes a pointer and return a pointer
-void compute_SHA(node_t const * const work) {
+void compute_SHA(node_t const *const work) {
     uint64_t answer = htobe64(decode(work->request));
     // Send answer to the client
     size_t err = send(*work->connfd, &answer, PACKET_RESPONSE_SIZE, 0);

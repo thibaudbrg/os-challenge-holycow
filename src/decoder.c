@@ -11,7 +11,7 @@
 int compare(uint8_t const *to_compare, Request const *request) {
     if (to_compare != NULL && request != NULL) {
         if (memcmp(to_compare, request->hash, SHA_DIGEST_LENGTH) == 0) {
-            print_SHA(to_compare);
+            // print_SHA(to_compare);
             return 1;
         }
         return 0;
