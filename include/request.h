@@ -11,11 +11,13 @@ typedef struct {
     uint8_t p;
 } Request;
 
+void print_SHA(unsigned const char *SHA);
+
 Request *create_empty_request(void);
 
 void destroy_request(Request *request);
 
-Request *getRequest(const unsigned char *all_bytes, size_t length);
+Request *getRequest(int const *p_connfd);
 
 #ifdef __cplusplus
 }
