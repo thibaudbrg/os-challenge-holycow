@@ -9,7 +9,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <pthread.h>
+//#include <pthread.h>
 
 #include "messages.h"
 #include "request.h"
@@ -154,10 +154,10 @@ int main(int argc, char *argv[]) {
               "Server accept failed...");
         // printf("Connected to client.\n");
         // Create a new pointer foreach thread to not mess with several threads
-        pthread_t t;
-        int *p_connfd = malloc(sizeof(int));
-        *p_connfd = connfd;
-        pthread_create(&t, NULL, compute, p_connfd);
+          compute(connfd*);
+        //int *p_connfd = malloc(sizeof(int));
+        //*p_connfd = connfd;
+        //pthread_create(&t, NULL, compute, p_connfd);
     }
 
     shutdown(sockfd, SHUT_RDWR);
