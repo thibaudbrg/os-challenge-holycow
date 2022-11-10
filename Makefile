@@ -6,7 +6,7 @@ BIN_DIR := bin
 
 # Name of executable, source files, object files
 EXE := $(CURDIR)/server
-SRC = $(wildcard $(SRC_DIR)/*.c))
+SRC = $(wildcard $(SRC_DIR)/*.c)
 OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 # Flags
