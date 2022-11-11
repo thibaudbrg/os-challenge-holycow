@@ -73,19 +73,20 @@ int check(int exp, const char *msg) {
     return exp;
 }
 
-// compute now takes a pointer and return a pointer
-void *compute(void *p_connfd) {
-    int connfd = *((int *) p_connfd);
-    free(p_connfd); // We don't need it anymore
+
+int compute(int connfd) {
+   // int connfd = *((int *) p_connfd);
+   // free(p_connfd); // We don't need it anymore
 
     unsigned char buff[REQUEST_PACKET_SIZE];
+    bzero(buff,REQUEST_PACKET_SIZE);
 
     // read the message from client and copy it in buffer
     size_t length = read(connfd, buff, sizeof(buff));
     if (length != REQUEST_PACKET_SIZE) {
         fprintf(stderr, "ERROR: Unable to read %d elements, read only %zu elements: ", REQUEST_PACKET_SIZE, length);
         perror(NULL);
-        return NULL;
+        return SOCKET_ERROR;
     }
 
     Request *request = getRequest(buff, REQUEST_PACKET_SIZE);
@@ -96,7 +97,7 @@ void *compute(void *p_connfd) {
     if (err != RESPONSE_PACKET_SIZE) {
         fprintf(stderr, "ERROR: Failed to send: ");
         perror(NULL);
-        return NULL;
+        return SOCKET_ERROR;
     }
 
     // We free the request
@@ -105,7 +106,7 @@ void *compute(void *p_connfd) {
 
     close(connfd);
     //printf("Closing connection.\n");
-    return NULL;
+    return 0;
 }
 
 
@@ -154,7 +155,10 @@ int main(int argc, char *argv[]) {
               "Server accept failed...");
         // printf("Connected to client.\n");
         // Create a new pointer foreach thread to not mess with several threads
-          compute(connfd*);
+          int err = compute(connfd);
+          if(err != 0){
+              fprintf(stderr, "Programwas interrupted by an error number %d",err);
+          }
         //int *p_connfd = malloc(sizeof(int));
         //*p_connfd = connfd;
         //pthread_create(&t, NULL, compute, p_connfd);
