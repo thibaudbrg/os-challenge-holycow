@@ -5,3 +5,5 @@ server
 .idea/workspace.xml
 *.xml
 server
+*.d
+*.o

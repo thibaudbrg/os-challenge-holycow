@@ -15,13 +15,12 @@
 
 #define SOCKET_ERROR (-1)
 #define SERVER_BACKLOG 1024
-#define THREAD_POOL_SIZE 4
+#define THREAD_POOL_SIZE 6
 #define SA struct sockaddr
 #define SA_IN struct sockaddr_in
 
 pthread_t thread_pool[THREAD_POOL_SIZE];
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER; // Threads wait until something happens and then wake up
 
 int check(int exp, char const *msg) {
     if (exp == SOCKET_ERROR) {
@@ -49,10 +48,6 @@ _Noreturn void *thread_function(void *arg) {
 
         pthread_mutex_lock(&mutex);
         work = dequeue(queue);
-        if (work == NULL) {
-            pthread_cond_wait(&condition_var, &mutex);
-            work = dequeue(queue);
-        }
         pthread_mutex_unlock(&mutex);
 
         if (work != NULL) {
@@ -125,7 +120,6 @@ int main(int argc, char *argv[]) {
 
         pthread_mutex_lock(&mutex);
         enqueue(p_connfd, queue);
-        pthread_cond_signal(&condition_var); // Wake up the thread
         pthread_mutex_unlock(&mutex);
     }
 }
