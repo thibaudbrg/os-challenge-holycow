@@ -230,3 +230,12 @@ main thread and might interfere with network receive operations.
 
 This result of this experiment is as expected - a more intelligent scheduling algorithm
 outperforms a simple FIFO.
+
+
+## Caching the requests
+
+##### Author: Ons Riahi, s221565
+
+##### Branch: hashTables
+
+#### Experiment Motivation
