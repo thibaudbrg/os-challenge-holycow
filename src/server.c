@@ -11,6 +11,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/mman.h>
+#include <sys/wait.h>
 
 #include <unistd.h>
 #include "messages.h"
@@ -28,6 +29,7 @@
 #define SA struct sockaddr
 
 The_Hash *theHash;
+int n =0;
 
 
 int check(int exp, const char *msg) {
@@ -38,9 +40,6 @@ int check(int exp, const char *msg) {
     return exp;
 }
 
-void sigHandler(int signal){
-insert(theHash->hash,theHash->answer);
-}
 int compute(int connfd, The_Hash *theHash) {
     unsigned char buff[REQUEST_PACKET_SIZE];
     bzero(buff,REQUEST_PACKET_SIZE);
@@ -56,14 +55,18 @@ int compute(int connfd, The_Hash *theHash) {
     Request *request = getRequest(buff, REQUEST_PACKET_SIZE);
     uint64_t answer;
     uint64_t search_answer = search(request->hash);
+    //printf("%ld\n",search_answer);
     uint8_t *hashed = SHA256((unsigned char *) &search_answer, 8, NULL);
     if(search_answer !=0 && memcmp(hashed, request->hash, SIZE_HASH) ==0){
-        printf("request repeated");
+        n = n+1;
+        printf("request repeated %d\n ",n);
         answer =htobe64(search_answer);
     } else {
-        int child = fork();
-        check(child, "Fork Failed...");
+        //int child = fork();
+        //check(child, "Fork Failed...");
+        //printf("no repetition\n");
         answer = decode(request, theHash);
+
     }
     int err = send(connfd, &answer,RESPONSE_PACKET_SIZE,0);
     check(err,"Error writing to the client");
@@ -99,7 +102,7 @@ int main(int argc, char *argv[]) {
     int addrlen = sizeof(servaddr);
 
     theHash = mmap(NULL,sizeof(theHash),PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS,-1,0);
-    signal(SIGCHLD,sigHandler);
+
     check((sockfd = socket(AF_INET, SOCK_STREAM, 0)), "Socket creation failed...");
     printf("Socket successfully created.\n");
 
@@ -127,15 +130,13 @@ int main(int argc, char *argv[]) {
         // Accept the data packet from client
         check(connfd = accept(sockfd, (SA *) (struct sockaddr *) &servaddr, (socklen_t *) &addrlen),
               "Server accept failed...");
-          int err = compute(connfd,theHash);
-          if(err != 0){
-              fprintf(stderr, "Program was interrupted by an error number %d",err);
-          }
+        insert(theHash->hash,theHash->answer);
+        int err = compute(connfd,theHash);
+        if(err != 0){
+            fprintf(stderr, "Program was interrupted by an error number %d",err);
+        }
     }
 
     shutdown(sockfd, SHUT_RDWR);
     return 0;
 }
-
-
-

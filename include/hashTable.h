@@ -1,12 +1,12 @@
-
-
 #ifndef CHALLENGE_HASHTABLE_H
 #define CHALLENGE_HASHTABLE_H
 
 
 #include <stdint.h>
+#include "request.h"
+
 typedef struct {
-    uint8_t *hash;
+    uint8_t hash[SIZE_HASH];
     uint64_t answer;
 } The_Hash;
 

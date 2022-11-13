@@ -14,7 +14,6 @@ typedef struct {
 } Request;
 
 
-
 Request *create_empty_request(void);
 
 void destroy_request(Request *request);

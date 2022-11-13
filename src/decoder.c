@@ -1,8 +1,6 @@
-
 #include "decoder.h"
 #include "request.h"
 #include "messages.h"
-#include "hashTable.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -18,9 +16,13 @@ uint64_t decode(const Request *request, The_Hash *theHash ) {
                 break;
             }
         }
-        printf("Decoded: %" PRIu64 "\n", i);
+        //printf("Decoded: %" PRIu64 "\n", i);
         theHash->answer =i;
-        theHash->hash = request->hash;
+
+        for(size_t j =0; j< SIZE_HASH; ++j){
+            theHash->hash[j] = request->hash[j];
+
+        }
         return htobe64(i);
     }
     perror("ERROR: Pointer \"request\" is NULL: ");
