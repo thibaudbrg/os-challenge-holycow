@@ -16,7 +16,7 @@ typedef struct {
 typedef struct {
     uint8_t *hash;
     uint64_t answer;
-} decoding;
+} The_Hash;
 
 Request *create_empty_request(void);
 
