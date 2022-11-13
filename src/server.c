@@ -4,66 +4,31 @@
 #include <inttypes.h>
 #include <limits.h>
 #include <string.h>
+#include <signal.h>
 
 #include <netinet/in.h>
+#include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <unistd.h>
-//#include <pthread.h>
+#include <sys/mman.h>
 
+#include <unistd.h>
 #include "messages.h"
+#include "decoder.h"
 #include "request.h"
+#include "hashTable.h"
+
+
 
 #define SOCKET_ERROR (-1)
 #define REQUEST_PACKET_SIZE 49
 #define RESPONSE_PACKET_SIZE 8
-#define SERVER_BACKLOG 3
+#define SERVER_BACKLOG 1000
 
 #define SA struct sockaddr
 
-void print_SHA(const unsigned char *SHA) {
-    if (SHA != NULL) {
-        for (size_t i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
-            printf("%02x", SHA[i]);
-        }
-        putchar('\n');
-    }
-}
+The_Hash *theHash;
 
-int compare(const uint8_t *to_compare, const Request *request) {
-    if (to_compare != NULL && request != NULL) {
-        if (memcmp(to_compare, request->hash, SIZE_HASH) == 0) {
-            print_SHA(to_compare);
-            return 1;
-        }
-        return 0;
-    }
-    perror("ERROR: Pointers \"to_compare\" and/or \"request\" is/are NULL: ");
-    exit(EXIT_FAILURE);
-
-}
-
-uint8_t *hash(uint64_t *to_hash) {
-    if (to_hash != NULL) {
-        uint8_t *hashed = SHA256((unsigned char *) to_hash, 8, NULL);
-        return hashed;
-    }
-    perror("ERROR: Pointer \"to_hash\" is NULL: ");
-    exit(EXIT_FAILURE);
-}
-
-uint64_t decode(const Request *request) {
-    if (request != NULL) {
-        uint64_t i = request->start;
-        while (compare(hash(&i), request) != 1 && i < request->end) {
-            ++i;
-        }
-        printf("Decoded: %" PRIu64 "\n", i);
-        return i;
-    }
-    perror("ERROR: Pointer \"request\" is NULL: ");
-    exit(EXIT_FAILURE);
-}
 
 int check(int exp, const char *msg) {
     if (exp == SOCKET_ERROR) {
@@ -73,11 +38,10 @@ int check(int exp, const char *msg) {
     return exp;
 }
 
-
-int compute(int connfd) {
-   // int connfd = *((int *) p_connfd);
-   // free(p_connfd); // We don't need it anymore
-
+void sigHandler(int signal){
+insert(theHash->hash,theHash->answer);
+}
+int compute(int connfd, The_Hash *theHash) {
     unsigned char buff[REQUEST_PACKET_SIZE];
     bzero(buff,REQUEST_PACKET_SIZE);
 
@@ -90,22 +54,26 @@ int compute(int connfd) {
     }
 
     Request *request = getRequest(buff, REQUEST_PACKET_SIZE);
-    uint64_t answer = htobe64(decode(request));
-
-    // Send answer to the client
-    size_t err = send(connfd, &answer, RESPONSE_PACKET_SIZE, 0);
-    if (err != RESPONSE_PACKET_SIZE) {
-        fprintf(stderr, "ERROR: Failed to send: ");
-        perror(NULL);
-        return SOCKET_ERROR;
+    uint64_t answer;
+    uint64_t search_answer = search(request->hash);
+    uint8_t *hashed = SHA256((unsigned char *) &search_answer, 8, NULL);
+    if(search_answer !=0 && memcmp(hashed, request->hash, SIZE_HASH) ==0){
+        printf("request repeated");
+        answer =htobe64(search_answer);
+    } else {
+        int child = fork();
+        check(child, "Fork Failed...");
+        answer = decode(request, theHash);
     }
+    int err = send(connfd, &answer,RESPONSE_PACKET_SIZE,0);
+    check(err,"Error writing to the client");
 
     // We free the request
     free(request);
     request = NULL;
 
     close(connfd);
-    //printf("Closing connection.\n");
+
     return 0;
 }
 
@@ -130,16 +98,21 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in servaddr;
     int addrlen = sizeof(servaddr);
 
+    theHash = mmap(NULL,sizeof(theHash),PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS,-1,0);
+    signal(SIGCHLD,sigHandler);
     check((sockfd = socket(AF_INET, SOCK_STREAM, 0)), "Socket creation failed...");
     printf("Socket successfully created.\n");
+
+    int one = 1;
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &one, sizeof(one));
+    bzero((char*)&servaddr,sizeof(servaddr));
 
     // assign IP, PORT
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port = htons(port);
 
-    int one = 1;
-    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &one, sizeof(one));
+
 
     // Binding newly created socket to given IP
     check(bind(sockfd, (SA *) &servaddr, addrlen), "Socket bind failed...");
@@ -150,18 +123,14 @@ int main(int argc, char *argv[]) {
     printf("Server listening.\n");
 
     while (1) {
+
         // Accept the data packet from client
         check(connfd = accept(sockfd, (SA *) (struct sockaddr *) &servaddr, (socklen_t *) &addrlen),
               "Server accept failed...");
-        // printf("Connected to client.\n");
-        // Create a new pointer foreach thread to not mess with several threads
-          int err = compute(connfd);
+          int err = compute(connfd,theHash);
           if(err != 0){
-              fprintf(stderr, "Programwas interrupted by an error number %d",err);
+              fprintf(stderr, "Program was interrupted by an error number %d",err);
           }
-        //int *p_connfd = malloc(sizeof(int));
-        //*p_connfd = connfd;
-        //pthread_create(&t, NULL, compute, p_connfd);
     }
 
     shutdown(sockfd, SHUT_RDWR);

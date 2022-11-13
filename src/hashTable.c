@@ -1,5 +1,5 @@
 
-#include "../include/hashTable.h"
+#include "hashTable.h"
 #include "request.h"
 #include <stdint.h>
 #include <stdlib.h>
