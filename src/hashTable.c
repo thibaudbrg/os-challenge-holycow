@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define MAX 256
+#define MAX 600
 
 uint64_t  hashTable[MAX] = {0};
 
@@ -14,7 +14,7 @@ uint8_t index_hash (uint8_t *hash){
     for(int j =0; j< SIZE_HASH; ++j){
         i += hash[j];
     }
-    return i;
+    return i % MAX;
 }
 
 void insert(uint8_t *hash, uint64_t answer){
@@ -25,3 +25,5 @@ void insert(uint8_t *hash, uint64_t answer){
 uint64_t search(uint8_t *hash){
     return hashTable[index_hash(hash)];
 }
+
+

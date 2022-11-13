@@ -3,6 +3,7 @@
 #define CHALLENGE_DECODER_H
 
 #include "request.h"
+#include "hashTable.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
