@@ -97,9 +97,9 @@ The configuration parameters of the client was the following:
 | SEED               |    3435245     |
 | TOTAL              |      100       |
 | START              |       0        |
-| DIFFICULTY         |     600000     |
+| DIFFICULTY         |    30000000    |
 | REP\_PROB\_PERCENT |       20       |
-| DELAY_US           |     75000      |
+| DELAY_US           |     600000     |
 | PRIO_LAMBDA        |      1.50      |
 
 #### Results
@@ -142,9 +142,9 @@ cores, however we will try some different number of threads to see which number 
 | SEED               |    3435245     |
 | TOTAL              |      100       |
 | START              |       0        |
-| DIFFICULTY         |     600000     |
+| DIFFICULTY         |    30000000    |
 | REP\_PROB\_PERCENT |       20       |
-| DELAY_US           |     75000      |
+| DELAY_US           |     600000     |
 | PRIO_LAMBDA        |      1.50      |
 
 #### Results
@@ -198,9 +198,9 @@ threads in the worker pool-thread to be 6.
 | SEED               |    3435245     |
 | TOTAL              |      100       |
 | START              |       0        |
-| DIFFICULTY         |     600000     |
+| DIFFICULTY         |    30000000    |
 | REP\_PROB\_PERCENT |       20       |
-| DELAY_US           |     75000      |
+| DELAY_US           |     600000     |
 | PRIO_LAMBDA        |      1.50      |
 
 #### Results
