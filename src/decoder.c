@@ -2,6 +2,7 @@
 #include "decoder.h"
 #include "request.h"
 #include "messages.h"
+#include "hashTable.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
