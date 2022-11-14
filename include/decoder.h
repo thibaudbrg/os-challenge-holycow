@@ -1,4 +1,3 @@
-
 #ifndef CHALLENGE_DECODER_H
 #define CHALLENGE_DECODER_H
 
