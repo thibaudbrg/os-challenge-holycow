@@ -118,15 +118,15 @@ int main(int argc, char *argv[]) {
 
         int *p_connfd = malloc(sizeof(int));
         *p_connfd = connfd;
+        enqueue(p_connfd, queue);
 
 
 
         int pid_c = 0;
         if ((pid_c = fork())==0){
-           // pthread_mutex_lock(&lock);
-            enqueue(p_connfd, queue);
-            //pthread_mutex_unlock(&lock);
+            close(sockfd);
             process_function(queue);
+
         }
         else{
             pid[i++] = pid_c;
