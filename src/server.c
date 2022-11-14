@@ -55,7 +55,7 @@ int compute(int connfd, The_Hash *theHash) {
     Request *request = getRequest(buff, REQUEST_PACKET_SIZE);
     uint64_t answer;
     uint64_t search_answer = search(request->hash);
-    //printf("%ld\n",search_answer);
+    printf("%ld\n",search_answer);
     uint8_t *hashed = SHA256((unsigned char *) &search_answer, 8, NULL);
     if(search_answer !=0 && memcmp(hashed, request->hash, SIZE_HASH) ==0){
         n = n+1;
@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
         // Accept the data packet from client
         check(connfd = accept(sockfd, (SA *) (struct sockaddr *) &servaddr, (socklen_t *) &addrlen),
               "Server accept failed...");
-        insert(theHash->hash,theHash->answer);
+        insert(theHash->hash,theHash->value);
         int err = compute(connfd,theHash);
         if(err != 0){
             fprintf(stderr, "Program was interrupted by an error number %d",err);
