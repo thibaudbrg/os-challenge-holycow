@@ -17,7 +17,7 @@ uint64_t decode(const Request *request, The_Hash *theHash ) {
             }
         }
         //printf("Decoded: %" PRIu64 "\n", i);
-        theHash->answer =i;
+        theHash->value =i;
 
         for(size_t j =0; j< SIZE_HASH; ++j){
             theHash->hash[j] = request->hash[j];

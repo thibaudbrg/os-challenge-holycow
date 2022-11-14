@@ -1,29 +1,38 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include <limits.h>
 #include <string.h>
+#include <signal.h>
 
 #include <netinet/in.h>
+#include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <pthread.h>
-#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
 
+#include <unistd.h>
 #include "messages.h"
 #include "decoder.h"
-#include "priorityqueue.h"
+#include "request.h"
+#include "hashTable.h"
+
+
 
 #define SOCKET_ERROR (-1)
-#define SERVER_BACKLOG 1024
-#define PROCESS_NUMBER 4
+#define REQUEST_PACKET_SIZE 49
+#define RESPONSE_PACKET_SIZE 8
+#define SERVER_BACKLOG 1000
+
 #define SA struct sockaddr
-#define SA_IN struct sockaddr_in
+
+The_Hash *theHash;
+int n =0;
 
 
-pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-
-int check(int exp, char const *msg) {
+int check(int exp, const char *msg) {
     if (exp == SOCKET_ERROR) {
         perror(msg);
         exit(1);
@@ -31,36 +40,45 @@ int check(int exp, char const *msg) {
     return exp;
 }
 
-void compute_SHA(node_t const *const work) {
-    uint64_t answer = htobe64(decode(work->request));
-    // Send answer to the client
-    size_t err = send(*work->connfd, &answer, PACKET_RESPONSE_SIZE, 0);
+int compute(int connfd, The_Hash *theHash) {
+    unsigned char buff[REQUEST_PACKET_SIZE];
+    bzero(buff,REQUEST_PACKET_SIZE);
 
-    if (err != PACKET_RESPONSE_SIZE) {
-        fprintf(stderr, "ERROR: Failed to send (err = %zu) instead of %d: ", err, PACKET_RESPONSE_SIZE);
+    // read the message from client and copy it in buffer
+    size_t length = read(connfd, buff, sizeof(buff));
+    if (length != REQUEST_PACKET_SIZE) {
+        fprintf(stderr, "ERROR: Unable to read %d elements, read only %zu elements: ", REQUEST_PACKET_SIZE, length);
         perror(NULL);
+        return SOCKET_ERROR;
     }
+
+    Request *request = getRequest(buff, REQUEST_PACKET_SIZE);
+    uint64_t answer;
+    uint64_t search_answer = search(request->hash);
+    printf("%ld\n",search_answer);
+    uint8_t *hashed = SHA256((unsigned char *) &search_answer, 8, NULL);
+    if(search_answer !=0 && memcmp(hashed, request->hash, SIZE_HASH) ==0){
+        n = n+1;
+        printf("request repeated %d\n ",n);
+        answer =htobe64(search_answer);
+    } else {
+        //int child = fork();
+        //check(child, "Fork Failed...");
+        //printf("no repetition\n");
+        answer = decode(request, theHash);
+
+    }
+    int err = send(connfd, &answer,RESPONSE_PACKET_SIZE,0);
+    check(err,"Error writing to the client");
+
+    // We free the request
+    free(request);
+    request = NULL;
+
+    close(connfd);
+
+    return 0;
 }
-
-void process_function(Queue* queue) {
-    node_t *work = NULL;
-
-    pthread_mutex_lock(&lock);
-    work = dequeue(queue);
-    pthread_mutex_unlock(&lock);
-
-    if (work != NULL) {
-        // We have a connection
-        compute_SHA(work);
-
-
-        // We free the connfd and the corresponding request
-        destroy_node(work);
-        free(work);
-        work = NULL;
-    }
-
-    }
 
 
 int main(int argc, char *argv[]) {
@@ -72,30 +90,32 @@ int main(int argc, char *argv[]) {
     // Getting the port number
     char *err_port;
     long tmp = strtol(argv[1], &err_port, 10);
-    if (tmp > INT_MAX || tmp < INT_MIN || *err_port) {
+    if (tmp > INT_MAX || tmp < INT_MIN || *err_port) {// Overflow or Underflow or Extra data not null
         fprintf(stderr, "ERROR: Port number overflow or underflow or too long.\n");
         exit(EXIT_FAILURE);
     }
-    int port = (int) tmp;
+    int port = tmp;
 
     // Socket creation
     int sockfd, connfd;
-    SA_IN servaddr;
+    struct sockaddr_in servaddr;
     int addrlen = sizeof(servaddr);
 
-    Queue *queue = createQueue();
-    pid_t pid[PROCESS_NUMBER];
+    theHash = mmap(NULL,sizeof(theHash),PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS,-1,0);
 
     check((sockfd = socket(AF_INET, SOCK_STREAM, 0)), "Socket creation failed...");
     printf("Socket successfully created.\n");
+
+    int one = 1;
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &one, sizeof(one));
+    bzero((char*)&servaddr,sizeof(servaddr));
 
     // assign IP, PORT
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port = htons(port);
 
-    int one = 1;
-    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &one, sizeof(one));
+
 
     // Binding newly created socket to given IP
     check(bind(sockfd, (SA *) &servaddr, addrlen), "Socket bind failed...");
@@ -105,35 +125,18 @@ int main(int argc, char *argv[]) {
     check(listen(sockfd, SERVER_BACKLOG), "Listening failed...");
     printf("Server listening.\n");
 
-    int i = 0;
     while (1) {
 
         // Accept the data packet from client
         check(connfd = accept(sockfd, (SA *) (struct sockaddr *) &servaddr, (socklen_t *) &addrlen),
               "Server accept failed...");
-        // printf("Connected to client.\n");
-
-        int *p_connfd = malloc(sizeof(int));
-        *p_connfd = connfd;
-
-
-
-        int pid_c = 0;
-        if ((pid_c = fork())==0){
-            pthread_mutex_lock(&lock);
-            enqueue(p_connfd, queue);
-            pthread_mutex_unlock(&lock);
-            process_function(queue);
-
-        }
-        else{
-            pid[i++] = pid_c;
-            if( i >= PROCESS_NUMBER-1){
-                i = 0;
-                while(i < PROCESS_NUMBER)
-                waitpid(pid[i++], NULL, 0);
-                i = 0;
-            }
+        insert(theHash->hash,theHash->value);
+        int err = compute(connfd,theHash);
+        if(err != 0){
+            fprintf(stderr, "Program was interrupted by an error number %d",err);
         }
     }
+
+    shutdown(sockfd, SHUT_RDWR);
+    return 0;
 }

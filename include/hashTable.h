@@ -7,7 +7,7 @@
 
 typedef struct {
     uint8_t hash[SIZE_HASH];
-    uint64_t answer;
+    uint64_t value;
 } The_Hash;
 
 uint8_t index_hash (uint8_t *hash);
