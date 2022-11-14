@@ -166,15 +166,15 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Makefile Application.Makefile" />
       <item itemvalue="Makefile Application.all" />
       <item itemvalue="Makefile Application.bin" />
-      <item itemvalue="Makefile Application.Makefile" />
       <item itemvalue="Makefile Application.obj" />
+      <item itemvalue="Makefile Target.Makefile (1)" />
       <item itemvalue="Makefile Target.Makefile" />
       <item itemvalue="Makefile Target.all (1)" />
-      <item itemvalue="Makefile Target.Makefile (1)" />
-      <item itemvalue="Makefile Target.clean" />
       <item itemvalue="Makefile Target.all" />
+      <item itemvalue="Makefile Target.clean" />
     </list>
     <recent_temporary>
       <list>

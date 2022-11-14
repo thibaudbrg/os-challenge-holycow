@@ -16,7 +16,7 @@
 
 #define SOCKET_ERROR (-1)
 #define SERVER_BACKLOG 1024
-#define PROCESS_NUMBER 2
+#define PROCESS_NUMBER 4
 #define SA struct sockaddr
 #define SA_IN struct sockaddr_in
 
@@ -35,6 +35,7 @@ void compute_SHA(node_t const *const work) {
     uint64_t answer = htobe64(decode(work->request));
     // Send answer to the client
     size_t err = send(*work->connfd, &answer, PACKET_RESPONSE_SIZE, 0);
+
     if (err != PACKET_RESPONSE_SIZE) {
         fprintf(stderr, "ERROR: Failed to send (err = %zu) instead of %d: ", err, PACKET_RESPONSE_SIZE);
         perror(NULL);
@@ -44,24 +45,20 @@ void compute_SHA(node_t const *const work) {
 void process_function(Queue* queue) {
     node_t *work = NULL;
 
-    //pthread_mutex_lock(&lock);
+    pthread_mutex_lock(&lock);
     work = dequeue(queue);
-    //pthread_mutex_unlock(&lock);
+    pthread_mutex_unlock(&lock);
 
-    while (work == NULL) {
-        //pthread_mutex_lock(&lock);
-        work = dequeue(queue);
+    if (work != NULL) {
+        // We have a connection
+        compute_SHA(work);
+
+
+        // We free the connfd and the corresponding request
+        destroy_node(work);
+        free(work);
+        work = NULL;
     }
-    //pthread_mutex_unlock(&lock);
-
-
-    //We have a connection
-    compute_SHA(work);
-
-    // We free the connfd and the corresponding request
-    destroy_node(work);
-    free(work);
-    work = NULL;
 
     }
 
@@ -118,13 +115,12 @@ int main(int argc, char *argv[]) {
 
         int *p_connfd = malloc(sizeof(int));
         *p_connfd = connfd;
-        enqueue(p_connfd, queue);
 
 
 
         int pid_c = 0;
         if ((pid_c = fork())==0){
-            close(sockfd);
+            enqueue(p_connfd, queue);
             process_function(queue);
 
         }
