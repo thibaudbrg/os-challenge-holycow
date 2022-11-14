@@ -120,7 +120,9 @@ int main(int argc, char *argv[]) {
 
         int pid_c = 0;
         if ((pid_c = fork())==0){
+            pthread_mutex_lock(&lock);
             enqueue(p_connfd, queue);
+            pthread_mutex_unlock(&lock);
             process_function(queue);
 
         }
