@@ -249,7 +249,7 @@ since the computer which is running the test have a multi-core CPU with 4 cores.
 (critical sections) and thus no need for synchronisation. If we want to increase the number of processes we will need
 to protect the critical sections. We will see later what is the optimal choice.
 
-## Optimizing Maximum Number Threads
+## Optimizing the number of processes
 In this section we seek to find the optimal number of processes.
 
 #### Setup
@@ -276,14 +276,64 @@ The configuration parameters of the client was the following:
 #### Results
 
 Below are the results of the tests:
+Note that when the number of processes exceeds 4, some security of the critical region have been implemented.
 
 
-| Run         | 4 Processes    | 4 Threads      | 5 Threads      | 6 Threads      | 7 Threads      | 8 Threads      | 20 Threads     |
-|-------------|----------------|----------------|----------------|----------------|----------------|----------------|----------------|
-| First Run   | 43.490.995     | 24.671.300     | 20.899.400     | 19.063.160     | 20.425.256     | 21.532.380     | 23.463.315     |
-| Second Run  | 29.603.170     | 25.518.803     | 21.005.840     | 23.730.163     | 20.681.164     | 21.664.842     | 22.048.472     |
-| Third Run   | 28.995.181     | 24.280.959     | 20.995.528     | 20.129.427     | 22.083.564     | 21.868.455     | 22.498.278     |
-| **Average** | **29.464.635** | **24.818.339** | **20.966.867** | **20.882.172** | **21.050.894** | **21.688.119** | **22.662.390** |
+| Run         | 4 Processes    | 5 Processes    | 10 Processes   | 20 Processes   | 50 Processes   | 100 Processes  | 
+|-------------|----------------|----------------|----------------|----------------|----------------|----------------|
+| First Run   | 43.490.995     | 56.853.092     | 28.273.468     | 25.301.062     | 32.465.741     | 38.502.073     | 
+| Second Run  | 28.869.131     | 32.835.505     | 33.762.657     | 29.910.688     | 39.938.347     | 33.823.337     | 
+| Third Run   | 32.406.480     | 33.714.794     | 26.862.934     | 37.785.497     | 34.472.936     | 33.482.823     | 
+| **Average** | **34.922.202** | **41.134.463** | **29.633.019** | **30.999.082** | **35.625.674** | **35.269.411** | 
+
+Below is a graphical representation of the results:
+
+![](img_readme/img3.png)
+
+#### Discussion and Conclusion
+
+Looking at the graph the best number of processes seems to be between 10 and 20. We initially expected that the best number would be
+3 (4 including the parent process) because this would match the number of cores.
+
+## Comparison between multithreading and multiprocessing
+In this section we compare the two parallelization techniques. Indeed, we run both models three times with their 
+respective optimal number of threads/processes.
+
+#### Setup
+
+All tests regarding this experiment has been executed on the same computer,
+we have tried to keep the workload constant during the test session,
+however this is nearly impossible and background activity could result in errors.
+The configuration parameters of the client was the following:
+
+##### Run Configuration
+
+| Setting            |     Value      |
+|--------------------|:--------------:|
+| SERVER             | 192.168.101.10 |
+| PORT               |      5003      |
+| SEED               |    3435245     |
+| TOTAL              |      100       |
+| START              |       0        |
+| DIFFICULTY         |    30000000    |
+| REP\_PROB\_PERCENT |       20       |
+| DELAY_US           |     600000     |
+| PRIO_LAMBDA        |      1.50      |
+
+#### Results
+
+Below are the results of the tests:
+Note that we used 6 threads and 10 processes.
+
+
+| Run         |   Processes    |    Threads     |
+|-------------|:--------------:|:--------------:|
+| First run   |   95.220.820   |   24.671.300   |
+| Second run  |   97.668.541   |   25.518.803   |
+| Third run   |   92.979.926   |   24.280.959   |
+| **Average** | **95.289.762** | **24.823.687** |
+
+#### Discussion and Conclusion
 
 
 
