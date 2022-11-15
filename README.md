@@ -232,6 +232,64 @@ This result of this experiment is as expected - a more intelligent scheduling al
 outperforms a simple FIFO.
 
 
+## Multiprocess Model vs Multithread Model
+
+##### Author: Ghalia Bennani, s221649
+
+##### Branch: Multiprocess-Basic
+
+#### Experiment Motivation
+
+The aim of this experiment is to test another type of parallelization. Indeed, we want to compare the concurrent
+implementations using multiples threads and multiple processes. Even if we believe that the multiprocess version will 
+be slower than the multi-threads one, we want to give it a try.
+The process model works that way: every time the server receives a client request a new process is created using the 
+fork system call. We need to choose wisely the number of processes that can live simultaneously, in our case it is four
+since the computer which is running the test have a multi-core CPU with 4 cores. This way there is no shared memory 
+(critical sections) and thus no need for synchronisation. If we want to increase the number of processes we will need
+to protect the critical sections. We will see later what is the optimal choice.
+
+## Optimizing Maximum Number Threads
+In this section we seek to find the optimal number of processes.
+
+#### Setup
+
+All tests regarding this experiment has been executed on the same computer,
+we have tried to keep the workload constant during the test session,
+however this is nearly impossible and background activity could result in errors.
+The configuration parameters of the client was the following:
+
+##### Run Configuration
+
+| Setting            |     Value      |
+|--------------------|:--------------:|
+| SERVER             | 192.168.101.10 |
+| PORT               |      5003      |
+| SEED               |    3435245     |
+| TOTAL              |      100       |
+| START              |       0        |
+| DIFFICULTY         |    30000000    |
+| REP\_PROB\_PERCENT |       20       |
+| DELAY_US           |     600000     |
+| PRIO_LAMBDA        |      1.50      |
+
+#### Results
+
+Below are the results of the tests:
+
+
+| Run         | 4 Processes    | 4 Threads      | 5 Threads      | 6 Threads      | 7 Threads      | 8 Threads      | 20 Threads     |
+|-------------|----------------|----------------|----------------|----------------|----------------|----------------|----------------|
+| First Run   | 43.490.995     | 24.671.300     | 20.899.400     | 19.063.160     | 20.425.256     | 21.532.380     | 23.463.315     |
+| Second Run  | 29.603.170     | 25.518.803     | 21.005.840     | 23.730.163     | 20.681.164     | 21.664.842     | 22.048.472     |
+| Third Run   | 28.995.181     | 24.280.959     | 20.995.528     | 20.129.427     | 22.083.564     | 21.868.455     | 22.498.278     |
+| **Average** | **29.464.635** | **24.818.339** | **20.966.867** | **20.882.172** | **21.050.894** | **21.688.119** | **22.662.390** |
+
+
+
+
+
+
 ## Caching the requests
 
 ##### Author: Ons Riahi, s221565

@@ -45,9 +45,9 @@ void compute_SHA(node_t const *const work) {
 void process_function(Queue* queue) {
     node_t *work = NULL;
 
-    pthread_mutex_lock(&lock);
+    //pthread_mutex_lock(&lock);
     work = dequeue(queue);
-    pthread_mutex_unlock(&lock);
+    //pthread_mutex_unlock(&lock);
 
     if (work != NULL) {
         // We have a connection
@@ -120,9 +120,9 @@ int main(int argc, char *argv[]) {
 
         int pid_c = 0;
         if ((pid_c = fork())==0){
-            pthread_mutex_lock(&lock);
+            //pthread_mutex_lock(&lock);
             enqueue(p_connfd, queue);
-            pthread_mutex_unlock(&lock);
+            //pthread_mutex_unlock(&lock);
             process_function(queue);
 
         }

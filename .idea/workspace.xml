@@ -8,7 +8,6 @@
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="os-challenge-holycow" targetName="Makefile" />
       <config projectName="os-challenge-holycow" targetName="all" />
       <config projectName="os-challenge-holycow" targetName="bin" />
       <config projectName="os-challenge-holycow" targetName="obj" />
@@ -21,6 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cc5780fb-ed9d-4982-abc3-98bccfc8e66b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/server.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/server.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -109,11 +110,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Makefile Target.all (1)">
-    <configuration name="Makefile" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="os-challenge-holycow" TARGET_NAME="Makefile" CONFIG_NAME="Makefile" version="1">
-      <method v="2">
-        <option name="CLION.COMPOUND.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="all" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="os-challenge-holycow" TARGET_NAME="all" CONFIG_NAME="all" version="1">
       <method v="2">
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
@@ -165,7 +161,6 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Makefile Application.Makefile" />
       <item itemvalue="Makefile Application.all" />
       <item itemvalue="Makefile Application.bin" />
       <item itemvalue="Makefile Application.obj" />
