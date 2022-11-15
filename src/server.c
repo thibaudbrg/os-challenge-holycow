@@ -8,7 +8,6 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <pthread.h>
-#include <unistd.h>
 
 #include "messages.h"
 #include "decoder.h"
@@ -16,12 +15,12 @@
 
 #define SOCKET_ERROR (-1)
 #define SERVER_BACKLOG 1024
-#define PROCESS_NUMBER 10
+#define THREAD_POOL_SIZE 6
 #define SA struct sockaddr
 #define SA_IN struct sockaddr_in
 
-
-pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_t thread_pool[THREAD_POOL_SIZE];
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int check(int exp, char const *msg) {
     if (exp == SOCKET_ERROR) {
@@ -35,33 +34,33 @@ void compute_SHA(node_t const *const work) {
     uint64_t answer = htobe64(decode(work->request));
     // Send answer to the client
     size_t err = send(*work->connfd, &answer, PACKET_RESPONSE_SIZE, 0);
-
     if (err != PACKET_RESPONSE_SIZE) {
         fprintf(stderr, "ERROR: Failed to send (err = %zu) instead of %d: ", err, PACKET_RESPONSE_SIZE);
         perror(NULL);
     }
 }
 
-void process_function(Queue* queue) {
-    node_t *work = NULL;
+_Noreturn void *thread_function(void *arg) {
+    Queue *queue = (Queue *) arg;
+    // Infinite loop because we never want these threads to die
+    while (1) {
+        node_t *work = NULL;
 
-    pthread_mutex_lock(&lock);
-    work = dequeue(queue);
-    pthread_mutex_unlock(&lock);
+        pthread_mutex_lock(&mutex);
+        work = dequeue(queue);
+        pthread_mutex_unlock(&mutex);
 
-    if (work != NULL) {
-        // We have a connection
-        compute_SHA(work);
+        if (work != NULL) {
+            // We have a connection
+            compute_SHA(work);
 
-
-        // We free the connfd and the corresponding request
-        destroy_node(work);
-        free(work);
-        work = NULL;
+            // We free the connfd and the corresponding request
+            destroy_node(work);
+            free(work);
+            work = NULL;
+        }
     }
-
-    }
-
+}
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -84,7 +83,11 @@ int main(int argc, char *argv[]) {
     int addrlen = sizeof(servaddr);
 
     Queue *queue = createQueue();
-    pid_t pid[PROCESS_NUMBER];
+
+    // First off, create a bunch of threads to handle future connections
+    for (int i = 0; i < THREAD_POOL_SIZE; ++i) {
+        pthread_create(&thread_pool[i], NULL, thread_function, queue);
+    }
 
     check((sockfd = socket(AF_INET, SOCK_STREAM, 0)), "Socket creation failed...");
     printf("Socket successfully created.\n");
@@ -105,35 +108,24 @@ int main(int argc, char *argv[]) {
     check(listen(sockfd, SERVER_BACKLOG), "Listening failed...");
     printf("Server listening.\n");
 
-    int i = 0;
-    while (1) {
 
+    while (1) {
         // Accept the data packet from client
         check(connfd = accept(sockfd, (SA *) (struct sockaddr *) &servaddr, (socklen_t *) &addrlen),
               "Server accept failed...");
         // printf("Connected to client.\n");
 
         int *p_connfd = malloc(sizeof(int));
+        if (p_connfd == NULL) {
+            fprintf(stderr, "Error: cannot malloc the connection p_connfd\n");
+            exit(0);
+        }
         *p_connfd = connfd;
 
-
-
-        int pid_c = 0;
-        if ((pid_c = fork())==0){
-            pthread_mutex_lock(&lock);
-            enqueue(p_connfd, queue);
-            pthread_mutex_unlock(&lock);
-            process_function(queue);
-
-        }
-        else{
-            pid[i++] = pid_c;
-            if( i >= PROCESS_NUMBER-1){
-                i = 0;
-                while(i < PROCESS_NUMBER)
-                waitpid(pid[i++], NULL, 0);
-                i = 0;
-            }
-        }
+        pthread_mutex_lock(&mutex);
+        enqueue(p_connfd, queue);
+        pthread_mutex_unlock(&mutex);
     }
+
+    return 0;
 }

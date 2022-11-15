@@ -9,6 +9,7 @@ extern "C" {
 typedef struct node {
     int *connfd;
     Request *request; // Add the whole request including the priority
+    u_int64_t weight;
     struct node *next;
 } node_t;
 
