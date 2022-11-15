@@ -356,3 +356,71 @@ option in the final configuration.
 ##### Branch: hashTables
 
 #### Experiment Motivation
+
+Repetition of taks or events is something common in our daily lives. For example, accessing DTU web page multiple times during the same day. For this purpose, web caching was invented, it’s the activity of storing data for reuse, such as a copy of a web page served by a web server. It’s cached or stored the first time a user visits the page and the next time a user requests the same page, a cache will serve the copy, which helps keep the origin server from getting overloaded as well as it enhances page delivery speed significantly and reduce the work needed to be done by the server.
+It’s crystal clear to see the analogy between the given example and the fact that a server in our OS-Challenge can receive a duplicate of a previously sent request. So, a way to avoid computing the same reverse hashing, is to save or cache the previous hashes and their original values. So, whenever a request is repeated, there is no need to waste time on decoding, we can extract the right answer faster.
+In practice, we can use several data structures for caching but in our project, we implemented a hash table which is known to be more efficient than other data structures since the insert and search operations have a time complexity O(1).
+So, the idea was to implement an array of structs containing both the hash and its corresponding value. We also used closed hashing which is a method of collision resolution that consists in searching through alternative locations in the array until either the target record is found or an unused array slot is found, which indicates that there is no such key in the table.
+(The key here is going to be the hash).
+
+#### Setup 
+All tests regarding this experiment has been executed on the same machine.
+
+##### Run Configuration
+
+| Setting            |     Value      |
+|--------------------|:--------------:|
+| SERVER             | 192.168.101.10 |
+| PORT               |      5003      |
+| SEED               |    3435245     |
+| TOTAL              |      100       |
+| START              |       0        |
+| DIFFICULTY         |    30000000    |
+| REP\_PROB\_PERCENT |       20       |
+| DELAY_US           |     600000     |
+| PRIO_LAMBDA        |      1.50      |
+
+#### Results
+
+Below are the results of the tests:
+
+| Run         |   Sequential without hash table   |    Sequential with hash table     |
+|-------------|:---------------------------------:|:---------------------------------:|
+| First run   |            95.220.820             |            71.792.487             |
+| Second run  |            97.668.541             |            72.894.615             |
+| Third run   |            92.979.926             |            70.524.722             |
+| **Average** |          **95.289.762**           |          **71.737.275**           |
+
+Below is a graphical representation of the results :
+
+![](img_readme/image1.png)
+
+#### Discussion and conclusion :
+
+We can see that using a hashtable is faster than reverse hashing whenever we receive a request. Although, the difference is not so large since the repetition probability is only 20% but it is still better than using the simple sequential model.
+NB : below we increased the repetition probability, the results are better as expected .
+
+| Run         |    repetition probability 20%     |    repetition probability 50%     |
+|-------------|:---------------------------------:|:---------------------------------:|
+| First run   |            71.792.487             |            41.191.500             |
+| Second run  |            72.894.615             |            43.275.962             |
+| Third run   |            70.524.722             |            40.760.749             |
+| **Average** |          **71.737.275**           |          **41.742.737**           |
+
+And this graph is a representation of the results :
+
+![](img_readme/image2.png)
+
+
+## Multi-threading and Caching
+
+##### Author: Ons Riahi, s221565
+
+##### Branch: Final-Version
+
+#### Experiment Motivation
+
+As we saw previously, both multi-threading and caching have a good impact on the server’s performance since these two experiments are efficient and makes the server faster when it comes to answering the client’s requests.
+That’s why we decided to combine these two features for our final version of OS-Challenge.
+
+The hash table being used by multiple threads at the same time has a need for some kind of synchronization. The latter has to guarantee consistency of the hash table with parallel inserts, updates and queries on the data. To do so, we will use locks.
