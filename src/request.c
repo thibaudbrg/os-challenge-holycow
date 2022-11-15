@@ -20,14 +20,12 @@ Request *create_empty_request(void) {
     Request *output = NULL;
     output = malloc(sizeof(Request));
     if (output != NULL) {
-        output->hash = calloc(SHA256_DIGEST_LENGTH, sizeof(uint8_t));
-        if (output->hash != NULL) {
-            output->p = 0;
-            output->start = 0;
-            output->end = 0;
-            // printf("Request created successfully!\n");
-            return output;
-        }
+        output->hash = NULL; // No need to allocate already (will be done by buff)
+        output->p = 0;
+        output->start = 0;
+        output->end = 0;
+        // printf("Request created successfully!\n");
+        return output;
     }
     return NULL;
 }
@@ -37,21 +35,16 @@ Request *getRequest(int const *p_connfd) {
     if (buff != NULL) {
         size_t length = read(*p_connfd, buff, PACKET_REQUEST_SIZE);
         if (length != PACKET_REQUEST_SIZE) {
-            fprintf(stderr, "ERROR getRequest(): Unable to read %d elements, read only %zu elements.\n", PACKET_REQUEST_SIZE,
+            fprintf(stderr, "ERROR getRequest(): Unable to read %d elements, read only %zu elements.\n",
+                    PACKET_REQUEST_SIZE,
                     length);
             return NULL;
         }
 
         Request *request = create_empty_request();
-
         request->hash = (uint8_t *) (buff + PACKET_REQUEST_HASH_OFFSET);
-
-        uint64_t *start = (uint64_t *) (buff + PACKET_REQUEST_START_OFFSET);
-        request->start = htobe64(*start);
-
-        uint64_t *end = (uint64_t *) (buff + PACKET_REQUEST_END_OFFSET);
-        request->end = htobe64(*end);
-
+        request->start = be64toh(*(uint64_t *) (buff + PACKET_REQUEST_START_OFFSET));
+        request->end = be64toh(*(uint64_t *) (buff + PACKET_REQUEST_END_OFFSET));
         request->p = ((uint8_t *) (buff + PACKET_REQUEST_PRIO_OFFSET))[0];
 
         return request;
@@ -59,6 +52,7 @@ Request *getRequest(int const *p_connfd) {
     }
     return NULL;
 }
+
 
 void destroy_request(Request *request) {
     if (request != NULL) {

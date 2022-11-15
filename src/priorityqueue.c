@@ -8,13 +8,21 @@
 
 Queue *createQueue(void) {
     Queue *queue = malloc(sizeof(Queue));
+    if (queue == NULL) {
+        fprintf(stderr, "Error: Cannot allocate memory for a newnode.\n");
+        exit(0);
+    }
     queue->head = NULL;
     queue->size = 0;
     return queue;
 }
 
-node_t *createNode(int * p_connfd) {
+node_t *createNode(int *p_connfd) {
     node_t *newnode = malloc(sizeof(node_t));
+    if (newnode == NULL) {
+        fprintf(stderr, "Error: Cannot allocate memory for a newnode.\n");
+        exit(0);
+    }
     newnode->request = getRequest(p_connfd);
     newnode->weight = newnode->request->p / (newnode->request->end - newnode->request->start);
 
@@ -25,7 +33,6 @@ node_t *createNode(int * p_connfd) {
 
 void enqueue(int *p_connfd, Queue *queue) {
     node_t *newnode = createNode(p_connfd);
-
     // Special case: head has less priority than newNode
     // so place it in front and change the head
     if (queue->head == NULL || newnode->weight > queue->head->weight) {
@@ -70,7 +77,7 @@ void destroy_node(node_t *node) {
     }
 }
 
-void print_queue(Queue const * const queue) {
+void print_queue(Queue const *const queue) {
     if (queue->size == 0) {
         printf("The queue is empty\n");
     } else {

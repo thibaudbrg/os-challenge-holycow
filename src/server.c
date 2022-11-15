@@ -116,10 +116,16 @@ int main(int argc, char *argv[]) {
         // printf("Connected to client.\n");
 
         int *p_connfd = malloc(sizeof(int));
+        if (p_connfd == NULL) {
+            fprintf(stderr, "Error: cannot malloc the connection p_connfd\n");
+            exit(0);
+        }
         *p_connfd = connfd;
 
         pthread_mutex_lock(&mutex);
         enqueue(p_connfd, queue);
         pthread_mutex_unlock(&mutex);
     }
+
+    return 0;
 }
