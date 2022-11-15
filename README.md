@@ -242,7 +242,9 @@ outperforms a simple FIFO.
 
 The aim of this experiment is to test another type of parallelization. Indeed, we want to compare the concurrent
 implementations using multiples threads and multiple processes. Even if we believe that the multiprocess version will 
-be slower than the multi-threads one, we want to give it a try.
+be slower than the multi-threads one, we want to give it a try. Of course, in this experiment, we keep exactly the same
+configuration as the last kept version (priority queue...). We only replacing the multithreading by multiprocessing.
+
 The process model works that way: every time the server receives a client request a new process is created using the 
 fork system call. We need to choose wisely the number of processes that can live simultaneously, in our case it is four
 since the computer which is running the test have a multi-core CPU with 4 cores. This way there is no shared memory 
@@ -328,16 +330,23 @@ Note that we used 6 threads and 10 processes.
 
 | Run         |   Processes    |    Threads     |
 |-------------|:--------------:|:--------------:|
-| First run   |   95.220.820   |   24.671.300   |
-| Second run  |   97.668.541   |   25.518.803   |
-| Third run   |   92.979.926   |   24.280.959   |
-| **Average** | **95.289.762** | **24.823.687** |
+| First run   |   28.273.468   |   18.689.768   |
+| Second run  |   33.762.657   |   23.543.790   |
+| Third run   |   26.862.934   |   20.635.433   |
+| **Average** | **29.633.019** | **20.956.330** |
+
+Below is a graphical representation of the results:
+
+![](img_readme/img4.png)
+
 
 #### Discussion and Conclusion
 
-
-
-
+Looking at the result there is a noticeable difference when comparing the averages, the thread model is approximately 
+1.5 times faster than the process model. That was expected since threads are more lightweight than processes and thus
+changing threads is much faster than changing processes and creating and terminating threads is also much faster.
+Furthermore, threads share the same address space as opposite to processes. Therefore, we won't keep the multiprocess
+option in the final configuration.
 
 
 ## Caching the requests

@@ -16,7 +16,7 @@
 
 #define SOCKET_ERROR (-1)
 #define SERVER_BACKLOG 1024
-#define PROCESS_NUMBER 100
+#define PROCESS_NUMBER 10
 #define SA struct sockaddr
 #define SA_IN struct sockaddr_in
 
