@@ -4,10 +4,11 @@
 extern "C" {
 #endif
 
+#define SIZE_HASH 32
 typedef struct {
     uint8_t *hash;
-    u_int64_t start;
-    u_int64_t end;
+    uint64_t start;
+    uint64_t end;
     uint8_t p;
 } Request;
 

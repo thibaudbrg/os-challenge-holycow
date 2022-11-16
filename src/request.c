@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <unistd.h>
-
+#include <strings.h>
 #include "request.h" // Include itself for more security
 #include "messages.h"
 
@@ -35,6 +35,7 @@ Request *create_empty_request(void) {
 Request *getRequest(int const *p_connfd) {
     unsigned char *buff = calloc(PACKET_REQUEST_SIZE, sizeof(char));
     if (buff != NULL) {
+        bzero(buff,PACKET_REQUEST_SIZE);
         size_t length = read(*p_connfd, buff, PACKET_REQUEST_SIZE);
         if (length != PACKET_REQUEST_SIZE) {
             fprintf(stderr, "ERROR getRequest(): Unable to read %d elements, read only %zu elements.\n", PACKET_REQUEST_SIZE,
