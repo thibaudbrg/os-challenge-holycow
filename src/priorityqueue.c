@@ -13,7 +13,7 @@ Queue *createQueue(void) {
     return queue;
 }
 
-node_t *createNode(int * p_connfd) {
+node_t *createNode(int *p_connfd) {
     node_t *newnode = malloc(sizeof(node_t));
     newnode->request = getRequest(p_connfd);
     newnode->weight = newnode->request->p / (newnode->request->end - newnode->request->start);
@@ -70,7 +70,7 @@ void destroy_node(node_t *node) {
     }
 }
 
-void print_queue(Queue const * const queue) {
+void print_queue(Queue const *const queue) {
     if (queue->size == 0) {
         printf("The queue is empty\n");
     } else {

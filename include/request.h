@@ -4,7 +4,6 @@
 extern "C" {
 #endif
 
-#define SIZE_HASH 32
 typedef struct {
     uint8_t *hash;
     uint64_t start;

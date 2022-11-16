@@ -10,9 +10,10 @@
 #include "hashTable.h"
 
 pthread_mutex_t lock;
-int n =0;
-void init_decode(){
-    pthread_mutex_init(&lock,NULL);
+int n = 0;
+
+void init_decode() {
+    pthread_mutex_init(&lock, NULL);
 }
 
 uint64_t decode(const Request *request) {
@@ -20,23 +21,23 @@ uint64_t decode(const Request *request) {
         uint64_t answer;
         answer = search(request->hash);
         printf("the answer: %" PRIu64 "\n", answer);
-        if (answer ==0){
+        if (answer == 0) {
             uint64_t i = request->start;
-            for(i; i< request->end; ++i){
+            for (i; i < request->end; ++i) {
                 uint8_t *hashed = SHA256((unsigned char *) &i, 8, NULL);
-                if(memcmp(hashed,request->hash,SIZE_HASH)==0){
+                if (memcmp(hashed, request->hash, SHA256_DIGEST_LENGTH) == 0) {
                     pthread_mutex_lock(&lock);
-                    insert(request->hash,i);
+                    insert(request->hash, i);
                     pthread_mutex_unlock(&lock);
                     return htobe64(i);
                 }
             }
         }
-        n=n+1;
-        printf("request repeated %d\n",n);
+        n = n + 1;
+        printf("request repeated %d\n", n);
         return htobe64(answer);
-        }
-        //printf("Decoded: %" PRIu64 "\n", i);
+    }
+    //printf("Decoded: %" PRIu64 "\n", i);
     perror("ERROR: Pointer \"request\" is NULL: ");
     exit(EXIT_FAILURE);
 }

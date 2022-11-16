@@ -4,9 +4,10 @@
 
 #include <stdint.h>
 #include "request.h"
+#include "messages.h"
 
 typedef struct {
-    uint8_t hash[SIZE_HASH];
+    uint8_t hash[SHA256_DIGEST_LENGTH];
     uint64_t value;
 } The_Hash;
 void init_table();
