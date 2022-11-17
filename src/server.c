@@ -7,11 +7,14 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/mman.h>
 #include <pthread.h>
 
 #include "messages.h"
 #include "decoder.h"
 #include "priorityqueue.h"
+#include "hashTable.h"
+#include "request.h"
 
 #define SOCKET_ERROR (-1)
 #define SERVER_BACKLOG 1024
@@ -22,6 +25,13 @@
 pthread_t thread_pool[THREAD_POOL_SIZE];
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
+
+/**
+ * A function that checks if a certain operation fails or not
+ * @param exp : the error code
+ * @param msg : the printed message
+ * @return the error code
+ */
 int check(int exp, char const *msg) {
     if (exp == SOCKET_ERROR) {
         perror(msg);
@@ -30,8 +40,13 @@ int check(int exp, char const *msg) {
     return exp;
 }
 
+/**
+ * A function that computes the reverse hashing
+ * @param work : contains the necessary information
+ * to decode and send the answer to the client
+ */
 void compute_SHA(node_t const *const work) {
-    uint64_t answer = htobe64(decode(work->request));
+    uint64_t answer = decode(work->request);
     // Send answer to the client
     size_t err = send(*work->connfd, &answer, PACKET_RESPONSE_SIZE, 0);
     if (err != PACKET_RESPONSE_SIZE) {
@@ -81,7 +96,7 @@ int main(int argc, char *argv[]) {
     int sockfd, connfd;
     SA_IN servaddr;
     int addrlen = sizeof(servaddr);
-
+    init_table();
     Queue *queue = createQueue();
 
     // First off, create a bunch of threads to handle future connections
@@ -92,13 +107,16 @@ int main(int argc, char *argv[]) {
     check((sockfd = socket(AF_INET, SOCK_STREAM, 0)), "Socket creation failed...");
     printf("Socket successfully created.\n");
 
+    int one = 1;
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &one, sizeof(one));
+    bzero((char*)&servaddr, sizeof(servaddr));
+
     // assign IP, PORT
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port = htons(port);
 
-    int one = 1;
-    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &one, sizeof(one));
+
 
     // Binding newly created socket to given IP
     check(bind(sockfd, (SA *) &servaddr, addrlen), "Socket bind failed...");
@@ -116,16 +134,10 @@ int main(int argc, char *argv[]) {
         // printf("Connected to client.\n");
 
         int *p_connfd = malloc(sizeof(int));
-        if (p_connfd == NULL) {
-            fprintf(stderr, "Error: cannot malloc the connection p_connfd\n");
-            exit(0);
-        }
         *p_connfd = connfd;
 
         pthread_mutex_lock(&mutex);
         enqueue(p_connfd, queue);
         pthread_mutex_unlock(&mutex);
     }
-
-    return 0;
 }

@@ -8,10 +8,6 @@
 
 Queue *createQueue(void) {
     Queue *queue = malloc(sizeof(Queue));
-    if (queue == NULL) {
-        fprintf(stderr, "Error: Cannot allocate memory for a newnode.\n");
-        exit(0);
-    }
     queue->head = NULL;
     queue->size = 0;
     return queue;
@@ -19,10 +15,6 @@ Queue *createQueue(void) {
 
 node_t *createNode(int *p_connfd) {
     node_t *newnode = malloc(sizeof(node_t));
-    if (newnode == NULL) {
-        fprintf(stderr, "Error: Cannot allocate memory for a newnode.\n");
-        exit(0);
-    }
     newnode->request = getRequest(p_connfd);
     newnode->weight = newnode->request->p / (newnode->request->end - newnode->request->start);
 
@@ -33,6 +25,7 @@ node_t *createNode(int *p_connfd) {
 
 void enqueue(int *p_connfd, Queue *queue) {
     node_t *newnode = createNode(p_connfd);
+
     // Special case: head has less priority than newNode
     // so place it in front and change the head
     if (queue->head == NULL || newnode->weight > queue->head->weight) {
@@ -53,7 +46,7 @@ void enqueue(int *p_connfd, Queue *queue) {
     //print_queue(queue);
 }
 
-// Returns NULL is the queue is empty
+// Returns NULL if the queue is empty
 // Returns the pointer to the connfd with the highest priority, if there is one to get
 node_t *dequeue(Queue *queue) {
     if (queue->size != 0) {
