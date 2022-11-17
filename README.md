@@ -353,7 +353,9 @@ option in the final configuration.
 #### Experiment Motivation
 
 Repetition of taks or events is something common in our daily lives. For example, accessing DTU web page multiple times during the same day. For this purpose, web caching was invented, it’s the activity of storing data for reuse, such as a copy of a web page served by a web server. It’s cached or stored the first time a user visits the page and the next time a user requests the same page, a cache will serve the copy, which helps keep the origin server from getting overloaded as well as it enhances page delivery speed significantly and reduce the work needed to be done by the server.
+
 It’s crystal clear to see the analogy between the given example and the fact that a server in our OS-Challenge can receive a duplicate of a previously sent request. So, a way to avoid computing the same reverse hashing, is to save or cache the previous hashes and their original values. So, whenever a request is repeated, there is no need to waste time on decoding, we can extract the right answer faster.
+
 In practice, we can use several data structures for caching but in our project, we implemented a hash table which is known to be more efficient than other data structures since the insert and search operations have a time complexity O(1).
 So, the idea was to implement an array of structs containing both the hash and its corresponding value. We also used closed hashing which is a method of collision resolution that consists in searching through alternative locations in the array until either the target record is found or an unused array slot is found, which indicates that there is no such key in the table.
 (The key here is going to be the hash).
@@ -456,10 +458,17 @@ We tried to test with a repetition probability of 50% and these are the results 
 
 | Run         |    repetition probability 20%     |    repetition probability 50%     |
 |-------------|:---------------------------------:|:---------------------------------:|
-| First run   |            18.958.127             |            ??.???.???             |
-| Second run  |            17.198.736             |            ??.???.???             |
-| Third run   |            17.763.928             |            ??.???.???             |
-| **Average** |          **17.973.597**           |          **??.???.???**           |
+| First run   |            18.958.127             |            4.855.266              |
+| Second run  |            17.198.736             |            4.974.597              |
+| Third run   |            17.763.928             |            4.873.498              |
+| **Average** |          **17.973.597**           |          **4.901.121**            |
 
 And the corresponding graphical representation :
+
+![](img_readme/imageF2.png)
+
+# Final Conclusion
+
+Even though there are other experiments that could have a good impact on the server, multi-threading, multi-processing and caching requests are the best ones so far.
+
 
