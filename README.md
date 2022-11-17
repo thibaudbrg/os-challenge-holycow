@@ -8,14 +8,9 @@ The following are what is implemented in our final submission to the OS challeng
 
 - Multithreading with a pool-thread (6 threads)
 - Priority Cost function for scheduling tasks
+- Multiprocessing
 - Hash-tables for caching
 
-And below are the others features which were fast enough to keep them for the final implementation:
-
-- ??
-- ??
-- ??
-- ??
 
 ##### Hardware Specification
 
@@ -424,3 +419,47 @@ As we saw previously, both multi-threading and caching have a good impact on the
 That’s why we decided to combine these two features for our final version of OS-Challenge.
 
 The hash table being used by multiple threads at the same time has a need for some kind of synchronization. The latter has to guarantee consistency of the hash table with parallel inserts, updates and queries on the data. To do so, we will use locks.
+
+##### Run Configuration
+
+| Setting            |     Value      |
+|--------------------|:--------------:|
+| SERVER             | 192.168.101.10 |
+| PORT               |      5003      |
+| SEED               |    3435245     |
+| TOTAL              |      100       |
+| START              |       0        |
+| DIFFICULTY         |    30000000    |
+| REP\_PROB\_PERCENT |       20       |
+| DELAY_US           |     600000     |
+| PRIO_LAMBDA        |      1.50      |
+
+#### Results
+
+Below are the results of the tests:
+
+| Run         |   Sequential   |    Multi-threading without hash table     |     Multi-threading with hash table    |
+|-------------|:--------------:|:-----------------------------------------:|:---------------------------------------:
+| First run   |   95.220.820   |                 18.689.768                |               18.958.127               |
+| Second run  |   97.668.541   |                 23.543.790                |               17.198.736               |
+| Third run   |   92.979.926   |                 20.635.433                |               17.763.928               |
+| **Average** | **95.289.762** |               **20.956.330**              |             **17.973.597**             |
+
+Below is a graphical representation of the results :
+
+![](img_readme/imageF.png)
+
+#### Discussion and conclusion :
+
+The results show that a performance boost can be achieved by combining multi-threading and caching. Although this improvement seems to be slight since the repetition probability is not high but we still cannot ignore it.
+We tried to test with a repetition probability of 50% and these are the results :
+
+| Run         |    repetition probability 20%     |    repetition probability 50%     |
+|-------------|:---------------------------------:|:---------------------------------:|
+| First run   |            18.958.127             |            ??.???.???             |
+| Second run  |            17.198.736             |            ??.???.???             |
+| Third run   |            17.763.928             |            ??.???.???             |
+| **Average** |          **17.973.597**           |          **??.???.???**           |
+
+And the corresponding graphical representation :
+
