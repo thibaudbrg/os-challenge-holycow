@@ -46,7 +46,7 @@ void enqueue(int *p_connfd, Queue *queue) {
     //print_queue(queue);
 }
 
-// Returns NULL is the queue is empty
+// Returns NULL if the queue is empty
 // Returns the pointer to the connfd with the highest priority, if there is one to get
 node_t *dequeue(Queue *queue) {
     if (queue->size != 0) {

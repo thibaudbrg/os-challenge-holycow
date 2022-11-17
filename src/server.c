@@ -24,9 +24,14 @@
 
 pthread_t thread_pool[THREAD_POOL_SIZE];
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-//The_Hash *theHash;
 
 
+/**
+ * A function that checks if a certain operation fails or not
+ * @param exp : the error code
+ * @param msg : the printed message
+ * @return the error code
+ */
 int check(int exp, char const *msg) {
     if (exp == SOCKET_ERROR) {
         perror(msg);
@@ -35,6 +40,11 @@ int check(int exp, char const *msg) {
     return exp;
 }
 
+/**
+ * A function that computes the reverse hashing
+ * @param work : contains the necessary information
+ * to decode and send the answer to the client
+ */
 void compute_SHA(node_t const *const work) {
     uint64_t answer = decode(work->request);
     // Send answer to the client
@@ -87,7 +97,6 @@ int main(int argc, char *argv[]) {
     SA_IN servaddr;
     int addrlen = sizeof(servaddr);
     init_table();
-    // theHash= mmap(NULL, sizeof(theHash), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS,-1,0);
     Queue *queue = createQueue();
 
     // First off, create a bunch of threads to handle future connections
