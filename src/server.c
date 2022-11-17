@@ -40,7 +40,7 @@ int check(int exp, const char *msg) {
     return exp;
 }
 
-int compute(int connfd, The_Hash *theHash) {
+int compute(int connfd) {
     unsigned char buff[REQUEST_PACKET_SIZE];
     bzero(buff,REQUEST_PACKET_SIZE);
 
@@ -53,20 +53,13 @@ int compute(int connfd, The_Hash *theHash) {
     }
 
     Request *request = getRequest(buff, REQUEST_PACKET_SIZE);
-    uint64_t answer;
-    uint64_t search_answer = search(request->hash);
-    printf("%ld\n",search_answer);
-    uint8_t *hashed = SHA256((unsigned char *) &search_answer, 8, NULL);
-    if(search_answer !=0 && memcmp(hashed, request->hash, SIZE_HASH) ==0){
-        n = n+1;
-        printf("request repeated %d\n",n);
-        answer =htobe64(search_answer);
-    } else {
-        answer = decode(request, theHash);
-
+    uint64_t answer = decode(request);
+    // Send answer to the client
+    size_t err = send(connfd, &answer, PACKET_RESPONSE_SIZE, 0);
+    if (err != PACKET_RESPONSE_SIZE) {
+        fprintf(stderr, "ERROR: Failed to send (err = %zu) instead of %d: ", err, PACKET_RESPONSE_SIZE);
+        perror(NULL);
     }
-    int err = send(connfd, &answer,RESPONSE_PACKET_SIZE,0);
-    check(err,"Error writing to the client");
 
     // We free the request
     free(request);
@@ -98,7 +91,6 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in servaddr;
     int addrlen = sizeof(servaddr);
 
-    theHash = mmap(NULL,sizeof(theHash),PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS,-1,0);
 
     check((sockfd = socket(AF_INET, SOCK_STREAM, 0)), "Socket creation failed...");
     printf("Socket successfully created.\n");
@@ -127,8 +119,7 @@ int main(int argc, char *argv[]) {
         // Accept the data packet from client
         check(connfd = accept(sockfd, (SA *) (struct sockaddr *) &servaddr, (socklen_t *) &addrlen),
               "Server accept failed...");
-        insert(theHash->hash,theHash->value);
-        int err = compute(connfd,theHash);
+        int err = compute(connfd);
         if(err != 0){
             fprintf(stderr, "Program was interrupted by an error number %d",err);
         }

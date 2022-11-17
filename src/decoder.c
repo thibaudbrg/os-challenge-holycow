@@ -1,30 +1,44 @@
-#include "decoder.h"
-#include "request.h"
-#include "messages.h"
-#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 
+#include "decoder.h" // Include itself for more security
+#include "messages.h"
+#include "request.h"
+#include "hashTable.h"
 
-uint64_t decode(const Request *request, The_Hash *theHash ) {
+int n = 0;
+
+
+/**
+ * The reverse-hashing function
+ * @param request : the request received from the client
+ * @return the value corresponding to the received hash
+ */
+uint64_t decode(const Request *request) {
     if (request != NULL) {
-        uint64_t i = request->start;
-        for(i; i<= request->end; ++i){
-            uint8_t *hashed = SHA256((unsigned char *) &i, 8, NULL);
-            if(memcmp(hashed,request->hash,SIZE_HASH)==0){
-                break;
+        uint64_t answer;
+        // Look if the answer already exists in the hash table
+        answer = search(request->hash);
+        printf("the answer: %" PRIu64 "\n", answer);
+        // If the answer is not in the hash-table, which means
+        // it's a new hash and not a previously received one
+        if (answer == 0) {
+            uint64_t i = request->start;
+            for (i; i < request->end; ++i) {
+                uint8_t *hashed = SHA256((unsigned char *) &i, 8, NULL);
+                if (memcmp(hashed, request->hash, SHA256_DIGEST_LENGTH) == 0) {
+                    insert(request->hash, i);
+                    return htobe64(i);
+                }
             }
         }
-        //printf("Decoded: %" PRIu64 "\n", i);
-        theHash->value =i;
-
-        for(size_t j =0; j< SIZE_HASH; ++j){
-            theHash->hash[j] = request->hash[j];
-
-        }
-        return htobe64(i);
+        n = n + 1;
+        printf("request repeated %d\n", n);
+        return htobe64(answer);
     }
+    //printf("Decoded: %" PRIu64 "\n", i);
     perror("ERROR: Pointer \"request\" is NULL: ");
     exit(EXIT_FAILURE);
 }

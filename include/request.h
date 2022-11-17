@@ -6,6 +6,9 @@ extern "C" {
 #include <stdint.h>
 #define SIZE_HASH 32
 
+/**
+* A structure containing the request packet received from the client
+*/
 typedef struct {
     uint8_t *hash;
     uint64_t start;

@@ -5,6 +5,9 @@
 #include <stdint.h>
 #include "request.h"
 
+/**
+ * A structure containing the hash and its corresponding value
+ */
 typedef struct {
     uint8_t hash[SIZE_HASH];
     uint64_t value;
