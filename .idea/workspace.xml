@@ -3,14 +3,15 @@
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
-  <component name="CMakePresetLoader"><![CDATA[{
-  "useNewFormat": true
-}]]></component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
   <component name="CMakeReloadState">
     <option name="reloaded" value="true" />
   </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
+      <config projectName="os-challenge-holycow" targetName="Makefile" />
       <config projectName="os-challenge-holycow" targetName="all" />
       <config projectName="os-challenge-holycow" targetName="bin" />
       <config projectName="os-challenge-holycow" targetName="obj" />
@@ -23,14 +24,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cc5780fb-ed9d-4982-abc3-98bccfc8e66b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/hashTable.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/hashTable.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/decoder.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/decoder.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/hashTable.h" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/include/priorityqueue.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/priorityqueue.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/request.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/request.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/decoder.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/decoder.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hashTable.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/priorityqueue.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/priorityqueue.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/request.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/request.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/server.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/server.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/valgrind.rpt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,18 +116,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\thiba\Music\os-challenge-common\os-challenge-holycow\include" />

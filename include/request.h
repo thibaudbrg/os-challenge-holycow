@@ -4,15 +4,10 @@
 extern "C" {
 #endif
 
-#include "messages.h"
-
-/**
- * A structure containing the request packet received from the client
- */
 typedef struct {
     uint8_t *hash;
-    uint64_t start;
-    uint64_t end;
+    u_int64_t start;
+    u_int64_t end;
     uint8_t p;
 } Request;
 

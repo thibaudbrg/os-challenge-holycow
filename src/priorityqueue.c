@@ -13,11 +13,9 @@ Queue *createQueue(void) {
     return queue;
 }
 
-node_t *createNode(int *p_connfd) {
+node_t *createNode(int * p_connfd) {
     node_t *newnode = malloc(sizeof(node_t));
     newnode->request = getRequest(p_connfd);
-    newnode->weight = newnode->request->p / (newnode->request->end - newnode->request->start);
-
     newnode->connfd = p_connfd;
     newnode->next = NULL;
     return newnode;
@@ -28,13 +26,13 @@ void enqueue(int *p_connfd, Queue *queue) {
 
     // Special case: head has less priority than newNode
     // so place it in front and change the head
-    if (queue->head == NULL || newnode->weight > queue->head->weight) {
+    if (queue->head == NULL || newnode->request->p > queue->head->request->p) {
         newnode->next = queue->head;
         queue->head = newnode;
     } else {
         // Traverse the list and find a position to insert the newNode
         node_t *start = queue->head;
-        while (start->next != NULL && start->next->weight > newnode->weight) {
+        while (start->next != NULL && start->next->request->p > newnode->request->p) {
             start = start->next;
         }
         // Either at the end or at the required position
@@ -46,7 +44,7 @@ void enqueue(int *p_connfd, Queue *queue) {
     //print_queue(queue);
 }
 
-// Returns NULL if the queue is empty
+// Returns NULL is the queue is empty
 // Returns the pointer to the connfd with the highest priority, if there is one to get
 node_t *dequeue(Queue *queue) {
     if (queue->size != 0) {
@@ -70,7 +68,7 @@ void destroy_node(node_t *node) {
     }
 }
 
-void print_queue(Queue const *const queue) {
+void print_queue(Queue const * const queue) {
     if (queue->size == 0) {
         printf("The queue is empty\n");
     } else {
