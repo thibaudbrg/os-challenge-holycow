@@ -16,7 +16,7 @@ typedef struct {
 
 void init_table();
 
-uint8_t find_slot (uint8_t *hash);
+uint8_t find_slot(uint8_t *hash);
 
 void insert(uint8_t *hash, uint64_t answer);
 

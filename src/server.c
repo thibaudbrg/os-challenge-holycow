@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
 
     int one = 1;
     setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &one, sizeof(one));
-    bzero((char*)&servaddr, sizeof(servaddr));
+    bzero((char *) &servaddr, sizeof(servaddr));
 
     // assign IP, PORT
     servaddr.sin_family = AF_INET;

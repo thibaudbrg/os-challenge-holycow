@@ -11,19 +11,18 @@ The following are what is implemented in our final submission to the OS challeng
 - Multiprocessing
 - Hash-tables for caching
 
-
 ##### Hardware Specification
 
 All tests have run on the same computer (using Vagrant). The specifications of the computer is listed below:
 
-| Specification    |     Value     |
-|------------------|:-------------:|
-| CPU              |   Intel i7    |
-| CPU clock speed  |    2.5 GHz    |
-| No. of CPU cores |       4       |
-| RAM amount       |     16 GB     |
-| RAM type         | 1600 MHz DDR3 |
-| OS               | macOS 10.14.6 |
+| Specification    |     Value      |
+|------------------|:--------------:|
+| CPU              | Intel i7-9750H |
+| CPU clock speed  |    2.6 GHz     |
+| No. of CPU cores |       4        |
+| RAM amount       |     32 GB      |
+| RAM type         | 2666 MHz DDR4  |
+| OS               |    W11 22H2    |
 
 Although all tests have been conducted on the same machine there is still the
 possibility for errors coming from background OS tasks. The tests were run back-to-back.
@@ -226,7 +225,6 @@ main thread and might interfere with network receive operations.
 This result of this experiment is as expected - a more intelligent scheduling algorithm
 outperforms a simple FIFO.
 
-
 ## Multiprocess Model vs Multithread Model
 
 ##### Author: Ghalia Bennani, s221649
@@ -236,17 +234,18 @@ outperforms a simple FIFO.
 #### Experiment Motivation
 
 The aim of this experiment is to test another type of parallelization. Indeed, we want to compare the concurrent
-implementations using multiples threads and multiple processes. Even if we believe that the multiprocess version will 
+implementations using multiples threads and multiple processes. Even if we believe that the multiprocess version will
 be slower than the multi-threads one, we want to give it a try. Of course, in this experiment, we keep exactly the same
 configuration as the last kept version (priority queue...). We only replacing the multithreading by multiprocessing.
 
-The process model works that way: every time the server receives a client request a new process is created using the 
+The process model works that way: every time the server receives a client request a new process is created using the
 fork system call. We need to choose wisely the number of processes that can live simultaneously, in our case it is four
-since the computer which is running the test have a multi-core CPU with 4 cores. This way there is no shared memory 
+since the computer which is running the test have a multi-core CPU with 4 cores. This way there is no shared memory
 (critical sections) and thus no need for synchronisation. If we want to increase the number of processes we will need
 to protect the critical sections. We will see later what is the optimal choice.
 
 ## Optimizing the number of processes
+
 In this section we seek to find the optimal number of processes.
 
 #### Setup
@@ -275,7 +274,6 @@ The configuration parameters of the client was the following:
 Below are the results of the tests:
 Note that when the number of processes exceeds 4, some security of the critical region have been implemented.
 
-
 | Run         | 4 Processes    | 5 Processes    | 10 Processes   | 20 Processes   | 50 Processes   | 100 Processes  | 
 |-------------|----------------|----------------|----------------|----------------|----------------|----------------|
 | First Run   | 43.490.995     | 56.853.092     | 28.273.468     | 25.301.062     | 32.465.741     | 38.502.073     | 
@@ -289,11 +287,13 @@ Below is a graphical representation of the results:
 
 #### Discussion and Conclusion
 
-Looking at the graph the best number of processes seems to be between 10 and 20. We initially expected that the best number would be
+Looking at the graph the best number of processes seems to be between 10 and 20. We initially expected that the best
+number would be
 3 (4 including the parent process) because this would match the number of cores.
 
 ## Comparison between multithreading and multiprocessing
-In this section we compare the two parallelization techniques. Indeed, we run both models three times with their 
+
+In this section we compare the two parallelization techniques. Indeed, we run both models three times with their
 respective optimal number of threads/processes.
 
 #### Setup
@@ -322,7 +322,6 @@ The configuration parameters of the client was the following:
 Below are the results of the tests:
 Note that we used 6 threads and 10 processes.
 
-
 | Run         |   Processes    |    Threads     |
 |-------------|:--------------:|:--------------:|
 | First run   |   28.273.468   |   18.689.768   |
@@ -334,15 +333,13 @@ Below is a graphical representation of the results:
 
 ![](img_readme/img4.png)
 
-
 #### Discussion and Conclusion
 
-Looking at the result there is a noticeable difference when comparing the averages, the thread model is approximately 
+Looking at the result there is a noticeable difference when comparing the averages, the thread model is approximately
 1.5 times faster than the process model. That was expected since threads are more lightweight than processes and thus
 changing threads is much faster than changing processes and creating and terminating threads is also much faster.
 Furthermore, threads share the same address space as opposite to processes. Therefore, we won't keep the multiprocess
 option in the final configuration.
-
 
 ## Caching the requests
 
@@ -352,15 +349,28 @@ option in the final configuration.
 
 #### Experiment Motivation
 
-Repetition of taks or events is something common in our daily lives. For example, accessing DTU web page multiple times during the same day. For this purpose, web caching was invented, it’s the activity of storing data for reuse, such as a copy of a web page served by a web server. It’s cached or stored the first time a user visits the page and the next time a user requests the same page, a cache will serve the copy, which helps keep the origin server from getting overloaded as well as it enhances page delivery speed significantly and reduce the work needed to be done by the server.
+Repetition of taks or events is something common in our daily lives. For example, accessing DTU web page multiple times
+during the same day. For this purpose, web caching was invented, it’s the activity of storing data for reuse, such as a
+copy of a web page served by a web server. It’s cached or stored the first time a user visits the page and the next time
+a user requests the same page, a cache will serve the copy, which helps keep the origin server from getting overloaded
+as well as it enhances page delivery speed significantly and reduce the work needed to be done by the server.
 
-It’s crystal clear to see the analogy between the given example and the fact that a server in our OS-Challenge can receive a duplicate of a previously sent request. So, a way to avoid computing the same reverse hashing, is to save or cache the previous hashes and their original values. So, whenever a request is repeated, there is no need to waste time on decoding, we can extract the right answer faster.
+It’s crystal clear to see the analogy between the given example and the fact that a server in our OS-Challenge can
+receive a duplicate of a previously sent request. So, a way to avoid computing the same reverse hashing, is to save or
+cache the previous hashes and their original values. So, whenever a request is repeated, there is no need to waste time
+on decoding, we can extract the right answer faster.
 
-In practice, we can use several data structures for caching but in our project, we implemented a hash table which is known to be more efficient than other data structures since the insert and search operations have a time complexity O(1).
-So, the idea was to implement an array of structs containing both the hash and its corresponding value. We also used closed hashing which is a method of collision resolution that consists in searching through alternative locations in the array until either the target record is found or an unused array slot is found, which indicates that there is no such key in the table.
+In practice, we can use several data structures for caching but in our project, we implemented a hash table which is
+known to be more efficient than other data structures since the insert and search operations have a time complexity O(1)
+.
+So, the idea was to implement an array of structs containing both the hash and its corresponding value. We also used
+closed hashing which is a method of collision resolution that consists in searching through alternative locations in the
+array until either the target record is found or an unused array slot is found, which indicates that there is no such
+key in the table.
 (The key here is going to be the hash).
 
-#### Setup 
+#### Setup
+
 All tests regarding this experiment has been executed on the same machine.
 
 ##### Run Configuration
@@ -394,7 +404,9 @@ Below is a graphical representation of the results :
 
 #### Discussion and conclusion :
 
-We can see that using a hashtable is faster than reverse hashing whenever we receive a request. Although, the difference is not so large since the repetition probability is only 20% but it is still better than using the simple sequential model.
+We can see that using a hashtable is faster than reverse hashing whenever we receive a request. Although, the difference
+is not so large since the repetition probability is only 20% but it is still better than using the simple sequential
+model.
 NB : below we increased the repetition probability, the results are better as expected .
 
 | Run         |    repetition probability 20%     |    repetition probability 50%     |
@@ -408,7 +420,6 @@ And this graph is a representation of the results :
 
 ![](img_readme/image2.png)
 
-
 ## Multi-threading and Caching
 
 ##### Author: Ons Riahi, s221565
@@ -417,10 +428,13 @@ And this graph is a representation of the results :
 
 #### Experiment Motivation
 
-As we saw previously, both multi-threading and caching have a good impact on the server’s performance since these two experiments are efficient and makes the server faster when it comes to answering the client’s requests.
+As we saw previously, both multi-threading and caching have a good impact on the server’s performance since these two
+experiments are efficient and makes the server faster when it comes to answering the client’s requests.
 That’s why we decided to combine these two features for our final version of OS-Challenge.
 
-The hash table being used by multiple threads at the same time has a need for some kind of synchronization. The latter has to guarantee consistency of the hash table with parallel inserts, updates and queries on the data. To do so, we will use locks.
+The hash table being used by multiple threads at the same time has a need for some kind of synchronization. The latter
+has to guarantee consistency of the hash table with parallel inserts, updates and queries on the data. To do so, we will
+use locks.
 
 ##### Run Configuration
 
@@ -440,12 +454,12 @@ The hash table being used by multiple threads at the same time has a need for so
 
 Below are the results of the tests:
 
-| Run         |   Sequential   |    Multi-threading without hash table     |     Multi-threading with hash table    |
-|-------------|:--------------:|:-----------------------------------------:|:---------------------------------------:
-| First run   |   95.220.820   |                 18.689.768                |               18.958.127               |
-| Second run  |   97.668.541   |                 23.543.790                |               17.198.736               |
-| Third run   |   92.979.926   |                 20.635.433                |               17.763.928               |
-| **Average** | **95.289.762** |               **20.956.330**              |             **17.973.597**             |
+| Run         |   Sequential   | Multi-threading without hash table | Multi-threading with hash table |
+|-------------|:--------------:|:----------------------------------:|:-------------------------------:|
+| First run   |   95.220.820   |             18.689.768             |           18.958.127            |
+| Second run  |   97.668.541   |             23.543.790             |           17.198.736            |
+| Third run   |   92.979.926   |             20.635.433             |           17.763.928            |
+| **Average** | **95.289.762** |           **20.956.330**           |         **17.973.597**          |
 
 Below is a graphical representation of the results :
 
@@ -453,15 +467,16 @@ Below is a graphical representation of the results :
 
 #### Discussion and conclusion :
 
-The results show that a performance boost can be achieved by combining multi-threading and caching. Although this improvement seems to be slight since the repetition probability is not high but we still cannot ignore it.
+The results show that a performance boost can be achieved by combining multi-threading and caching. Although this
+improvement seems to be slight since the repetition probability is not high but we still cannot ignore it.
 We tried to test with a repetition probability of 50% and these are the results :
 
 | Run         |    repetition probability 20%     |    repetition probability 50%     |
 |-------------|:---------------------------------:|:---------------------------------:|
-| First run   |            18.958.127             |            4.855.266              |
-| Second run  |            17.198.736             |            4.974.597              |
-| Third run   |            17.763.928             |            4.873.498              |
-| **Average** |          **17.973.597**           |          **4.901.121**            |
+| First run   |            18.958.127             |             4.855.266             |
+| Second run  |            17.198.736             |             4.974.597             |
+| Third run   |            17.763.928             |             4.873.498             |
+| **Average** |          **17.973.597**           |           **4.901.121**           |
 
 And the corresponding graphical representation :
 
@@ -469,6 +484,7 @@ And the corresponding graphical representation :
 
 # Final Conclusion
 
-Even though there are other experiments that could have a good impact on the server, multi-threading, multi-processing and caching requests are the best ones so far.
+Even though there are other experiments that could have a good impact on the server, multi-threading with an optimized
+numer of threads are the one that give the best results.
 
 

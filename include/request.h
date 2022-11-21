@@ -5,6 +5,7 @@ extern "C" {
 #endif
 
 #include "messages.h"
+
 /**
  * A structure containing the request packet received from the client
  */

@@ -23,7 +23,7 @@ uint64_t decode(const Request *request) {
         uint64_t answer;
         // Look if the answer already exists in the hash table
         answer = search(request->hash);
-        printf("the answer: %" PRIu64 "\n", answer);
+        printf("Decoded: %" PRIu64 "\n", answer);
         // If the answer is not in the hash-table, which means
         // it's a new hash and not a previously received one
         if (answer == 0) {
@@ -39,7 +39,7 @@ uint64_t decode(const Request *request) {
             }
         }
         n = n + 1;
-        printf("request repeated %d\n", n);
+        // printf("     Repetition number: %d\n", n);
         return htobe64(answer);
     }
     //printf("Decoded: %" PRIu64 "\n", i);
